@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CV – Shira Peleg</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .cv-page main {
+      position: absolute;
+      top: 45px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 24px;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    .cv-page .cv-embed-wrap {
+      width: 100%;
+      max-width: 800px;
+      flex: 1;
+      min-height: 400px;
+    }
+    .cv-page object,
+    .cv-page embed {
+      width: 100%;
+      height: 80vh;
+      min-height: 500px;
+      border: none;
+    }
+    .cv-page .cv-fallback {
+      font-family: 'PP Neue Montreal Mono', monospace;
+      font-size: 14px;
+      color: #333;
+      text-align: center;
+      margin-top: 24px;
+    }
+    .cv-page .cv-fallback a {
+      color: black;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body class="cv-page">
+  <nav class="top-nav" aria-label="ניווט ראשי">
+    <a href="index.html" class="nav-link">HOME</a>
+    <a href="index.html#about" class="nav-link">ABOUT</a>
+    <a href="index.html" class="nav-link">CONTACT</a>
+    <a href="cv.pdf" class="nav-link" target="_blank" rel="noopener">CV</a>
+  </nav>
+  <div class="top-line" aria-hidden="true"></div>
+  <main>
+    <div class="cv-embed-wrap">
+      <object data="cv.pdf" type="application/pdf" aria-label="CV PDF">
+        <p class="cv-fallback">
+          To view your CV here, add a PDF file named <strong>cv.pdf</strong> to the project folder.
+          Or <a href="cv.pdf" download>download CV</a> if the file exists.
+        </p>
+      </object>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,17 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Optional: uncomment if you use an editor/IDE folder
+# .idea/
+# .vscode/
+# *.swp
+# *.swo
+
+# Large files (over GitHub 100MB limit) – stay local only
+WILDFLOWERS PROTECTION LAW/1.gif
+website/1.mov

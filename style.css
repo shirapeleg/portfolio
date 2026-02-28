@@ -1,0 +1,893 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+@font-face {
+  font-family: 'PP Neue Montreal Mono';
+  src: url('fonts/PPNeueMontrealMono-Book.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Fonts from shira peleg/new fonts – used for title rotation */
+@font-face {
+  font-family: 'Acte';
+  src: url('shira peleg/new fonts/Acte.otf') format('opentype');
+}
+@font-face {
+  font-family: 'DingDongIrregular';
+  src: url('shira peleg/new fonts/DingDongIrregular.otf') format('opentype');
+}
+@font-face {
+  font-family: 'Ductus';
+  src: url('shira peleg/new fonts/Ductus.otf') format('opentype');
+}
+@font-face {
+  font-family: 'Feroniapi';
+  src: url('shira peleg/new fonts/Feroniapi-MediumItalic.otf') format('opentype');
+}
+@font-face {
+  font-family: 'Marion';
+  src: url('shira peleg/new fonts/Marion.otf') format('opentype');
+}
+@font-face {
+  font-family: 'OTMiniature';
+  src: url('shira peleg/new fonts/OTMiniature-Bold.otf') format('opentype');
+}
+@font-face {
+  font-family: 'SuperNotoriousDot';
+  src: url('shira peleg/new fonts/SuperNotoriousDot.otf') format('opentype');
+}
+@font-face {
+  font-family: 'TypefesseClaireObscure';
+  src: url('shira peleg/new fonts/Typefesse_Claire-Obscure.otf') format('opentype');
+}
+@font-face {
+  font-family: 'Velvelyne';
+  src: url('shira peleg/new fonts/Velvelyne-Book.otf') format('opentype');
+}
+@font-face {
+  font-family: 'Infini';
+  src: url('shira peleg/new fonts/infini.otf') format('opentype');
+}
+@font-face {
+  font-family: 'Revival';
+  src: url('shira peleg/new fonts/revival.otf') format('opentype');
+}
+@font-face {
+  font-family: 'Heebo';
+  src: url('fonts/Heebo-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+html {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  width: calc(100vw - 10px);
+  min-height: calc(100vh - 10px);
+  height: calc(100% - 10px);
+  margin: 5px;
+  overflow: hidden;
+  border: 1px solid black;
+  position: relative;
+}
+
+/* Text selection highlight – רקע לסימון טקסט */
+::selection {
+  background-color: #FFC48A;
+}
+::-moz-selection {
+  background-color: #FFC48A;
+}
+
+/* Top navigation bar: 4 equal parts with HOME, ABOUT, CONTACT, CV */
+.top-nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.top-nav .nav-link {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-family: 'PP Neue Montreal Mono', monospace;
+  font-size: 1rem;
+  color: black;
+  text-decoration: none;
+}
+
+.top-nav .nav-link:hover {
+  background: black;
+  color: white;
+}
+
+.top-line {
+  position: absolute;
+  top: 45px;
+  left: 0;
+  right: 0;
+  height: 0;
+  border-top: 1px solid black;
+  z-index: 10;
+}
+
+/* Work pages: top line only from vertical divider to right, so left section has its own connecting line */
+.work-page .top-line {
+  left: 25%;
+}
+
+/* Horizontal line in left section only: connects left frame to vertical divider, at nav height */
+.nav-line-left {
+  position: absolute;
+  top: 45px;
+  left: 0;
+  right: 75%;
+  height: 0;
+  border-top: 1px solid black;
+  z-index: 11;
+  box-sizing: border-box;
+}
+
+/* Second horizontal line in left section only (work pages) – closes the band under nav */
+.nav-line-second {
+  position: absolute;
+  top: 90px;
+  left: 0;
+  right: 0;
+  height: 0;
+  border-top: 1px solid black;
+  z-index: 10;
+}
+
+.work-page .nav-line-second {
+  right: 75%;
+}
+
+/* Vertical line in the middle of the left rectangle – splits it into two equal rectangles */
+.nav-rect-divider {
+  position: absolute;
+  left: 12.5%;
+  top: 45px;
+  width: 0;
+  height: 45px;
+  border-left: 1px solid black;
+  z-index: 11;
+  pointer-events: none;
+}
+
+/* Text in left rectangle: PREV – same font as nav */
+.nav-rect-prev {
+  position: absolute;
+  left: 0;
+  width: 12.5%;
+  top: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'PP Neue Montreal Mono', monospace;
+  font-size: 1rem;
+  color: black;
+  text-decoration: none;
+  z-index: 12;
+  pointer-events: auto;
+}
+
+.nav-rect-prev:hover {
+  background: black;
+  color: white;
+}
+
+/* Text in right rectangle: NEXT – same font as nav */
+.nav-rect-next {
+  position: absolute;
+  left: 12.5%;
+  width: 12.5%;
+  top: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'PP Neue Montreal Mono', monospace;
+  font-size: 1rem;
+  color: black;
+  text-decoration: none;
+  z-index: 12;
+  pointer-events: auto;
+}
+
+.nav-rect-next:hover {
+  background: black;
+  color: white;
+}
+
+.nav-line-below {
+  position: absolute;
+  top: 215px; /* 45px (nav) + 200px - 30px */
+  left: 0;
+  right: 0;
+  height: 0;
+  border-top: 1px solid black;
+}
+
+.nav-line-below-2 {
+  position: absolute;
+  top: 260px; /* nav-line-below + 45px */
+  left: 0;
+  right: 0;
+  height: 0;
+  border-top: 1px solid black;
+}
+
+.nav-line-below-3 {
+  position: absolute;
+  top: 305px; /* nav-line-below-2 + 45px */
+  left: 0;
+  right: 0;
+  height: 0;
+  border-top: 1px solid black;
+  z-index: 10;
+}
+
+.nav-divider {
+  position: absolute;
+  top: 0;
+  width: 0;
+  height: 45px;
+  border-left: 1px solid black;
+}
+
+.nav-divider-1 { left: 25%; }
+.nav-divider-2 { left: 50%; }
+.nav-divider-3 { left: 75%; }
+
+/* Work page: right rectangle (main content area) */
+.work-page main {
+  position: absolute;
+  left: 25%;
+  top: 46px;
+  right: 0;
+  bottom: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  box-sizing: border-box;
+  z-index: 1;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.work-page main::-webkit-scrollbar {
+  display: none;
+}
+
+.work-page-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.work-page-gallery img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  object-position: top center;
+  vertical-align: top;
+}
+
+.work-page-gallery video {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  object-position: top center;
+}
+
+/* Gallery with at least 2 items per row (e.g. South Film Festival) */
+.work-page-gallery-2col {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+}
+
+/* First row: works 1–2 same cell size, images keep original aspect ratio */
+.work-page-gallery-first-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  width: 100%;
+  min-height: 0;
+}
+
+.work-page-gallery-first-row img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  object-position: top center;
+}
+
+/* Rest: CSS columns – 2 columns, full-size images, 1px gap like other work pages */
+.work-page-gallery-rest {
+  column-count: 2;
+  column-gap: 1px;
+  width: 100%;
+}
+
+.south-gallery-item {
+  break-inside: avoid;
+  margin: 0 0 1px 0;
+  padding: 0;
+  line-height: 0;
+}
+
+.south-gallery-item.south-logo {
+  padding-top: 40px;
+}
+
+/* Empty white placeholder (e.g. removed 7.jpg) */
+.south-gallery-item.south-gallery-placeholder {
+  min-height: 200px;
+  background: #fff;
+}
+
+/* Slot for 40.png – same size/position as former 10.jpg, crop or scale as needed */
+.work-page-gallery-rest .south-gallery-item-fixed {
+  height: 200px;
+  min-height: 200px;
+  overflow: hidden;
+  display: block;
+}
+.work-page-gallery-rest .south-gallery-item-fixed img {
+  width: 100% !important;
+  height: 200px !important;
+  min-height: 200px;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+/* 40.png as background so it always shows in column layout */
+.work-page-gallery-rest .south-gallery-item-40 {
+  min-height: 200px;
+  background-image: url("SOUTH INTERNATIONAL FILM FESTIVAL/40.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #fff;
+}
+
+.south-gallery-item.south-logo img {
+  width: auto;
+  max-width: 260px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.work-page-gallery-rest .south-gallery-item img,
+.work-page-gallery-rest .south-gallery-item video {
+  width: 100%;
+  height: auto;
+  display: block;
+  vertical-align: top;
+}
+
+/* Stretch the second image (first row, right) slightly vertically so it reaches the top under nav line */
+.work-page-gallery-rest .south-gallery-item:nth-child(2) {
+  overflow: visible;
+}
+.work-page-gallery-rest .south-gallery-item:nth-child(2) img {
+  width: 100%;
+  transform: scale(1.02, 1.12);
+  transform-origin: top center;
+}
+
+.work-page-gallery-2col img,
+.work-page-gallery-2col video {
+  clip-path: none;
+  margin-top: 0;
+}
+
+.work-page-gallery img:first-child,
+.work-page-gallery video:first-child {
+  clip-path: inset(7px 0 0 0);
+  margin-top: -7px;
+}
+
+.work-page-gallery img:nth-child(2) {
+  clip-path: inset(90px 0 0 0);
+  margin-top: -90px;
+}
+
+/* Princess page: do not clip image 2 */
+.work-page-gallery-princess img:nth-child(2) {
+  clip-path: none;
+  margin-top: 0;
+}
+
+/* South (2col) gallery: first row must not be clipped by the rules above */
+.work-page-gallery-2col .work-page-gallery-first-row img {
+  clip-path: none;
+  margin-top: 0;
+}
+
+/* Block page: crop first image by 10px from top */
+.work-page-gallery-block img:first-child {
+  clip-path: inset(10px 0 0 0);
+  margin-top: -10px;
+}
+
+/* Street page: grid of 9 videos in 3 rows of 3, loop */
+.street-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  width: 100%;
+  min-height: 100%;
+  box-sizing: border-box;
+  background: #000;
+}
+
+.street-row {
+  display: flex;
+  gap: 1px;
+  flex: 1;
+  min-height: 0;
+}
+
+.street-cell {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.street-cell video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Canaanism page: rows 1+2, 3+4+5, 6+7, 8 – videos loop */
+.canaanism-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  width: 100%;
+  min-height: 100%;
+  box-sizing: border-box;
+  background: #fff;
+}
+
+.canaanism-row {
+  display: flex;
+  gap: 1px;
+  flex: 1;
+  min-height: 0;
+}
+
+.canaanism-cell {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.canaanism-cell video,
+.canaanism-cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Lissitzky page: grid of 9 images in 3 rows of 3 */
+.lissitzky-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  width: 100%;
+  min-height: 100%;
+  box-sizing: border-box;
+  background: #fff;
+}
+
+.lissitzky-row {
+  display: flex;
+  gap: 1px;
+  flex: 1;
+  min-height: 0;
+}
+
+.lissitzky-cell {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lissitzky-cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* Daily page: 1 / 2 / 3 / 2 / 3×3… rows */
+.daily-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  width: 100%;
+  min-height: 100%;
+  box-sizing: border-box;
+  background: #fff;
+}
+
+.daily-row {
+  display: flex;
+  gap: 1px;
+  min-height: 0;
+}
+
+.daily-row-1 .daily-cell {
+  flex: 1;
+}
+
+.daily-row-2 .daily-cell {
+  flex: 1;
+}
+
+.daily-row-3 .daily-cell {
+  flex: 1;
+}
+
+.daily-cell {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.daily-cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.nav-divider-full {
+  position: absolute;
+  left: 25%;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: 1px solid black;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* Work page: hover title in left rectangle (replaces main "Shira Peleg" title), OTMiniature bold serif – selectable */
+.work-page-hover-title {
+  position: absolute;
+  top: 124px;
+  left: 0;
+  width: 25%;
+  padding: 16px 12px 0;
+  box-sizing: border-box;
+  font-family: 'OTMiniature', Georgia, serif;
+  font-weight: 700;
+  font-size: clamp(36px, 5.5vw, 48px);
+  line-height: 1.1;
+  color: black;
+  z-index: 6;
+  pointer-events: auto;
+  overflow: hidden;
+}
+
+/* Title in upper part of left rectangle (e.g. wildflowers), same font as nav – below Broadsheet, selectable */
+.work-page-left-nav-title {
+  position: absolute;
+  top: 201px;
+  left: 0;
+  width: 25%;
+  padding: 0 12px;
+  box-sizing: border-box;
+  font-family: 'PP Neue Montreal Mono', monospace;
+  font-weight: normal;
+  font-size: 1rem;
+  line-height: 1.3;
+  color: black;
+  z-index: 6;
+  pointer-events: auto;
+  margin: 0;
+}
+
+/* Princess page: title 30px lower */
+.work-page-left-nav-title.work-page-left-nav-title-30-lower {
+  top: 259px;
+}
+
+/* Paragraph and specs at bottom of left rectangle (e.g. wildflowers) – pointer-events: auto so text is selectable */
+.work-page-left-footer {
+  position: absolute;
+  bottom: 34px;
+  left: 0;
+  width: 25%;
+  padding: 0 12px;
+  box-sizing: border-box;
+  z-index: 6;
+  pointer-events: auto;
+}
+.work-page-left-copy {
+  margin: 0 0 0.5em 0;
+  font-family: 'PP Neue Montreal Mono', monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: black;
+}
+.work-page-left-link {
+  display: block;
+  margin: 0 0 0.5em 0;
+  font-family: 'Heebo', sans-serif;
+  font-weight: 300;
+  font-size: 0.6875rem;
+  color: #758BFD;
+  text-decoration: none;
+  pointer-events: auto;
+}
+.work-page-left-link:hover {
+  text-decoration: underline;
+}
+.work-page-left-specs {
+  margin: 25px 0 0 0;
+  font-family: 'Heebo', sans-serif;
+  font-weight: 300;
+  font-size: 0.6875rem;
+  color: black;
+}
+
+/* Main name / title: SVG so baseline is fixed regardless of font */
+.site-title-wrap {
+  position: absolute;
+  top: 45px;
+  left: 24px;
+  width: min(90vw, 600px);
+  height: 200px; /* 160px to baseline (215px) + 40px for descenders (g, y, p) */
+  pointer-events: none;
+  overflow: visible;
+}
+
+.site-title {
+  margin: 0;
+  padding: 0;
+  font-size: 0; /* no extra space from inline gap */
+  line-height: 0;
+}
+
+/* viewBox height 200: y=160 = baseline (215px), y=160–200 = space for descenders */
+.site-title-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.site-title-text {
+  font-size: clamp(80px, 17.5vw, 155px);
+  font-size-adjust: 0.48; /* אחיד גודל ויזואלי בין פונטים (x-height) */
+  font-weight: 700;
+  fill: black;
+  letter-spacing: -0.02em;
+  font-family: 'Acte', Georgia, serif;
+  /* In SVG, y=160 is the alphabetic baseline – same line for every font */
+}
+
+/* About paragraph: between title and right edge; Contact paragraph: starts at vertical line left of CONTACT (50%) */
+.about-paragraph-wrap {
+  position: absolute;
+  top: 67px;
+  left: calc(24px + min(90vw, 600px) + 16px);
+  right: 0;
+  height: 148px; /* 215px - 67px */
+  padding: 0 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: none;
+  z-index: 6;
+  pointer-events: auto;
+}
+
+.about-paragraph-wrap.is-contact {
+  left: 50%;
+  top: 95px;   /* 45px + 50px lower */
+  height: 120px; /* 215px - 95px */
+}
+
+.about-paragraph-wrap.is-visible {
+  display: block;
+}
+
+.about-paragraph-text {
+  margin: 0;
+  font-family: 'PP Neue Montreal Mono', monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: black;
+}
+
+.contact-paragraph-text {
+  font-size: calc(0.875rem + 10px);
+}
+
+.contact-paragraph-text a {
+  color: #FFC48A;
+}
+
+.top-nav .nav-link.active {
+  background: black;
+  color: white;
+}
+
+/* Bottom rectangle grid: from third line (305px) to frame – full rectangle, equal squares */
+.bottom-rectangle-grid {
+  position: absolute;
+  top: 305px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  box-sizing: border-box;
+  background: transparent;
+  isolation: isolate;
+}
+
+.grid-cells {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.grid-cell {
+  position: absolute;
+  overflow: hidden;
+  pointer-events: auto;
+  z-index: 0;
+  cursor: pointer;
+}
+
+.grid-cell-img {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0;
+}
+
+.grid-cell:hover .grid-cell-img,
+.grid-cell-img.is-visible {
+  opacity: 1;
+}
+
+/* Intro animation: hover images appear one by one (top-left → bottom-right) then all fade out */
+.bottom-rectangle-grid.intro-animation .grid-cell .grid-cell-img {
+  opacity: 0;
+  transition: opacity 0.1s ease-out;
+}
+.bottom-rectangle-grid.intro-animation .grid-cell.intro-show .grid-cell-img {
+  opacity: 1;
+}
+
+.bottom-rectangle-grid svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: black;
+  stroke-width: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Two rectangles above grid (215–260, 260–305): work titles with vertical dividers */
+.works-rect {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 45px;
+  display: flex;
+  align-items: stretch;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.works-rect-1 { top: 215px; }
+.works-rect-2 { top: 260px; }
+
+.work-group {
+  display: flex;
+  align-items: stretch;
+  flex: 1;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.works-rect-1 .work-group:first-child {
+  flex: 2;
+}
+
+.works-rect-1 .work-group:last-child {
+  flex: 2;
+}
+
+.works-rect-2 .work-group:nth-child(3) {
+  flex: 2;
+}
+
+.work-item {
+  padding: 0 0.5em;
+  white-space: nowrap;
+  font-size: 1rem;
+  font-family: 'PP Neue Montreal Mono', monospace;
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.work-group:hover {
+  background: black;
+}
+
+.work-group:hover .work-item {
+  color: white;
+}
+
+.work-sep {
+  width: 0;
+  height: 100%;
+  border-left: 1px solid black;
+  flex-shrink: 0;
+}
+
+/* Desktop-first: base styles target desktop; use max-width media queries to adapt down */
