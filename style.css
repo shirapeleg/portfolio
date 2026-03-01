@@ -805,10 +805,10 @@ body {
   opacity: 1;
 }
 
-/* Intro animation: hover images appear one by one (top-left → bottom-right) then all fade out */
+/* Intro animation: בלי fade – הופעה והיעלמות מיידיות */
 .bottom-rectangle-grid.intro-animation .grid-cell .grid-cell-img {
   opacity: 0;
-  transition: opacity 0.1s ease-out;
+  transition: none;
 }
 .bottom-rectangle-grid.intro-animation .grid-cell.intro-show .grid-cell-img {
   opacity: 1;

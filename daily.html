@@ -5,12 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DAILY – Shira Peleg</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="preload" href="daily/01.jpg" as="image">
+  <link rel="preload" href="daily/02.png" as="image">
+  <link rel="preload" href="daily/03.png" as="image">
 </head>
 <body class="work-page">
   <nav class="top-nav" aria-label="ניווט ראשי">
     <a href="index.html" class="nav-link">HOME</a>
     <a href="index.html#about" class="nav-link">ABOUT</a>
-    <a href="#" class="nav-link">CONTACT</a>
+    <a href="index.html#contact" class="nav-link">CONTACT</a>
     <a href="cv.pdf" class="nav-link" target="_blank" rel="noopener">CV</a>
   </nav>
   <div class="top-line" aria-hidden="true"></div>
@@ -32,11 +35,11 @@
   <main>
     <div class="daily-gallery">
       <div class="daily-row daily-row-1">
-        <div class="daily-cell"><img src="daily/01.jpg" alt="Daily 01"></div>
+        <div class="daily-cell"><img src="daily/01.jpg" alt="Daily 01" fetchpriority="high"></div>
       </div>
       <div class="daily-row daily-row-2">
-        <div class="daily-cell"><img src="daily/02.png" alt="Daily 02"></div>
-        <div class="daily-cell"><img src="daily/03.png" alt="Daily 03"></div>
+        <div class="daily-cell"><img src="daily/02.png" alt="Daily 02" fetchpriority="high"></div>
+        <div class="daily-cell"><img src="daily/03.png" alt="Daily 03" fetchpriority="high"></div>
       </div>
       <div class="daily-row daily-row-3">
         <div class="daily-cell"><img src="daily/04.png" alt="Daily 04"></div>

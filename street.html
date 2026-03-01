@@ -5,12 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>STREET – Shira Peleg</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="preload" href="street/1.mp4" as="video">
+  <link rel="preload" href="street/2.mp4" as="video">
+  <link rel="preload" href="street/3.mp4" as="video">
 </head>
 <body class="work-page">
   <nav class="top-nav" aria-label="ניווט ראשי">
     <a href="index.html" class="nav-link">HOME</a>
     <a href="index.html#about" class="nav-link">ABOUT</a>
-    <a href="#" class="nav-link">CONTACT</a>
+    <a href="index.html#contact" class="nav-link">CONTACT</a>
     <a href="cv.pdf" class="nav-link" target="_blank" rel="noopener">CV</a>
   </nav>
   <div class="top-line" aria-hidden="true"></div>
@@ -32,9 +35,9 @@
   <main>
     <div class="street-gallery">
       <div class="street-row">
-        <div class="street-cell"><video src="street/1.mp4" loop muted playsinline autoplay></video></div>
-        <div class="street-cell"><video src="street/2.mp4" loop muted playsinline autoplay></video></div>
-        <div class="street-cell"><video src="street/3.mp4" loop muted playsinline autoplay></video></div>
+        <div class="street-cell"><video src="street/1.mp4" loop muted playsinline autoplay preload="auto"></video></div>
+        <div class="street-cell"><video src="street/2.mp4" loop muted playsinline autoplay preload="auto"></video></div>
+        <div class="street-cell"><video src="street/3.mp4" loop muted playsinline autoplay preload="auto"></video></div>
       </div>
       <div class="street-row">
         <div class="street-cell"><video src="street/4.mp4" loop muted playsinline autoplay></video></div>

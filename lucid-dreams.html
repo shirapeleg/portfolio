@@ -5,12 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LUCID DREAMS – Shira Peleg</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="preload" href="website/45.mp4" as="video">
+  <link rel="preload" href="website/2.png" as="image">
+  <link rel="preload" href="website/3.png" as="image">
 </head>
 <body class="work-page">
   <nav class="top-nav" aria-label="ניווט ראשי">
     <a href="index.html" class="nav-link">HOME</a>
     <a href="index.html#about" class="nav-link">ABOUT</a>
-    <a href="#" class="nav-link">CONTACT</a>
+    <a href="index.html#contact" class="nav-link">CONTACT</a>
     <a href="cv.pdf" class="nav-link" target="_blank" rel="noopener">CV</a>
   </nav>
   <div class="top-line" aria-hidden="true"></div>
@@ -33,13 +36,13 @@
   <main>
     <div class="canaanism-gallery">
       <div class="canaanism-row">
-        <div class="canaanism-cell"><video src="website/45.mp4" loop muted playsinline autoplay></video></div>
+        <div class="canaanism-cell"><video src="website/45.mp4" loop muted playsinline autoplay preload="auto"></video></div>
       </div>
       <div class="canaanism-row">
-        <div class="canaanism-cell"><img src="website/2.png" alt="Lucid Dreams – 2" /></div>
+        <div class="canaanism-cell"><img src="website/2.png" alt="Lucid Dreams – 2" fetchpriority="high" /></div>
       </div>
       <div class="canaanism-row">
-        <div class="canaanism-cell"><img src="website/3.png" alt="Lucid Dreams – 3" /></div>
+        <div class="canaanism-cell"><img src="website/3.png" alt="Lucid Dreams – 3" fetchpriority="high" /></div>
       </div>
       <div class="canaanism-row">
         <div class="canaanism-cell"><img src="website/4.png" alt="Lucid Dreams – 4" /></div>

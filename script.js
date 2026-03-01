@@ -11,6 +11,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const contactText = document.getElementById('contact-paragraph-text');
   let aboutVisible = false;
   let contactVisible = false;
+  /* כשנכנסים עם #about או #contact (חזרה מעמודי עבודה) – להציג את גריד ה-hover הרגיל */
+  let preferHoverGrid = false;
 
   function updatePanelVisibility() {
     var anyVisible = aboutVisible || contactVisible;
@@ -34,17 +36,29 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     if (window.location.hash === '#about') {
       aboutVisible = true;
-      updatePanelVisibility();
+      /* ב-About בלבד: הגריד יציג את תמונת ה-hover של העמוד (me.png), לא את מגוון התמונות */
+      /* לא קוראים ל-updatePanelVisibility() כאן – layoutGrid עדיין לא מוגדר; הפאנל יעודכן בסוף הטעינה */
     }
   }
 
   if (contactLink && aboutWrap && contactText) {
     contactLink.addEventListener('click', function (e) {
+      /* אם אנחנו בעמוד אחר (עמוד עבודה) – הקישור index.html#contact ינווט; לא למנוע */
+      var isHome = !window.location.pathname || window.location.pathname === '/' ||
+        window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('/');
+      if (!isHome) return;
       e.preventDefault();
       if (aboutVisible) aboutVisible = false;
       contactVisible = !contactVisible;
       updatePanelVisibility();
     });
+    /* הגעה מהעמוד הראשי עם #contact – לפתוח אוטומטית את פאנל ה-Contact */
+    if (window.location.hash === '#contact') {
+      aboutVisible = false;
+      contactVisible = true;
+      preferHoverGrid = true;
+      /* לא קוראים ל-updatePanelVisibility() כאן – layoutGrid עדיין לא מוגדר; הפאנל יעודכן בסוף הטעינה */
+    }
   }
 
   /* Title font rotation: cycle through all fonts from "shira peleg/new fonts" every 2 seconds */
@@ -357,7 +371,7 @@ document.addEventListener('DOMContentLoaded', function () {
         cell.style.height = cellHeight + 'px';
         const bg = document.createElement('div');
         bg.className = 'grid-cell-img';
-        bg.style.backgroundImage = aboutVisible
+        bg.style.backgroundImage = (aboutVisible && !preferHoverGrid)
           ? "url('me.png')"
           : "url('" + HOVER_BASE + imageNum + '.' + HOVER_IMAGE_EXT + "')";
         cell.appendChild(bg);
@@ -376,7 +390,7 @@ document.addEventListener('DOMContentLoaded', function () {
         })(cell, bg);
         cell.addEventListener('click', function () {
           var num = parseInt(cell.dataset.imageNum, 10);
-          if (aboutVisible) return;
+          if (aboutVisible && !preferHoverGrid) return;
           var page = getPageForImageNum(num);
           if (page) window.location.href = page + '.html';
         });
@@ -388,13 +402,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var isHome = !window.location.pathname || window.location.pathname === '/' ||
       window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('/');
-    if (!introRan && isHome) {
+    var navEntry = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+    var isReload = navEntry && navEntry.type === 'reload';
+    var fromOutside = !document.referrer || document.referrer.indexOf(window.location.origin) !== 0;
+    var showIntro = isReload || fromOutside;
+    if (!introRan && isHome && showIntro) {
       introRan = true;
       setTimeout(runGridIntro, 80);
     }
   }
 
-  layoutGrid();
+  /* כשנכנסים עם #about או #contact (חזרה מעמוד עבודה) – לבנות גריד ולפתוח את הפאנל; אחרת רק לבנות גריד */
+  if (window.location.hash === '#about' || window.location.hash === '#contact') {
+    updatePanelVisibility();
+  } else {
+    layoutGrid();
+  }
   window.addEventListener('resize', layoutGrid);
   /* כניסה ראשונה: אם הממדים לא היו מוכנים ב-DOMContentLoaded, בונים גריד ב-load ואז האנימציה תרוץ */
   window.addEventListener('load', function () {

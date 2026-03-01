@@ -5,12 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BLOCK – Shira Peleg</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="preload" href="book covers/2.jpg" as="image">
+  <link rel="preload" href="book covers/1.jpg" as="image">
+  <link rel="preload" href="book covers/3.jpg" as="image">
 </head>
 <body class="work-page">
   <nav class="top-nav" aria-label="ניווט ראשי">
     <a href="index.html" class="nav-link">HOME</a>
     <a href="index.html#about" class="nav-link">ABOUT</a>
-    <a href="#" class="nav-link">CONTACT</a>
+    <a href="index.html#contact" class="nav-link">CONTACT</a>
     <a href="cv.pdf" class="nav-link" target="_blank" rel="noopener">CV</a>
   </nav>
   <div class="top-line" aria-hidden="true"></div>
@@ -31,9 +34,9 @@
   </div>
   <main>
     <div class="work-page-gallery work-page-gallery-block">
-      <img src="book covers/2.jpg" alt="Block – Book cover 2" />
-      <img src="book covers/1.jpg" alt="Block – Book cover 1" />
-      <img src="book covers/3.jpg" alt="Block – Book cover 3" />
+      <img src="book covers/2.jpg" alt="Block – Book cover 2" fetchpriority="high" />
+      <img src="book covers/1.jpg" alt="Block – Book cover 1" fetchpriority="high" />
+      <img src="book covers/3.jpg" alt="Block – Book cover 3" fetchpriority="high" />
       <img src="book covers/4.png" alt="Block – Book cover 4" />
       <img src="book covers/5.png" alt="Block – Book cover 5" />
       <img src="book covers/6.png" alt="Block – Book cover 6" />

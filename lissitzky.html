@@ -5,12 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LISSITZKY – Shira Peleg</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="preload" href="LISSITZKY/1.png" as="image">
+  <link rel="preload" href="LISSITZKY/2.png" as="image">
+  <link rel="preload" href="LISSITZKY/3.png" as="image">
 </head>
 <body class="work-page">
   <nav class="top-nav" aria-label="ניווט ראשי">
     <a href="index.html" class="nav-link">HOME</a>
     <a href="index.html#about" class="nav-link">ABOUT</a>
-    <a href="#" class="nav-link">CONTACT</a>
+    <a href="index.html#contact" class="nav-link">CONTACT</a>
     <a href="cv.pdf" class="nav-link" target="_blank" rel="noopener">CV</a>
   </nav>
   <div class="top-line" aria-hidden="true"></div>
@@ -32,9 +35,9 @@
   <main>
     <div class="lissitzky-gallery">
       <div class="lissitzky-row">
-        <div class="lissitzky-cell"><img src="LISSITZKY/1.png" alt="Lissitzky 1"></div>
-        <div class="lissitzky-cell"><img src="LISSITZKY/2.png" alt="Lissitzky 2"></div>
-        <div class="lissitzky-cell"><img src="LISSITZKY/3.png" alt="Lissitzky 3"></div>
+        <div class="lissitzky-cell"><img src="LISSITZKY/1.png" alt="Lissitzky 1" fetchpriority="high"></div>
+        <div class="lissitzky-cell"><img src="LISSITZKY/2.png" alt="Lissitzky 2" fetchpriority="high"></div>
+        <div class="lissitzky-cell"><img src="LISSITZKY/3.png" alt="Lissitzky 3" fetchpriority="high"></div>
       </div>
       <div class="lissitzky-row">
         <div class="lissitzky-cell"><img src="LISSITZKY/4.png" alt="Lissitzky 4"></div>
