@@ -386,7 +386,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     gridEl.appendChild(cellsContainer);
 
-    if (!introRan && (window.location.pathname === '' || window.location.pathname === '/' || window.location.pathname.endsWith('index.html'))) {
+    var isHome = !window.location.pathname || window.location.pathname === '/' ||
+      window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('/');
+    if (!introRan && isHome) {
       introRan = true;
       setTimeout(runGridIntro, 80);
     }
@@ -394,4 +396,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
   layoutGrid();
   window.addEventListener('resize', layoutGrid);
+  /* כניסה ראשונה: אם הממדים לא היו מוכנים ב-DOMContentLoaded, בונים גריד ב-load ואז האנימציה תרוץ */
+  window.addEventListener('load', function () {
+    if (!gridEl.querySelector('.grid-cells') || !gridEl.querySelectorAll('.grid-cell').length) {
+      layoutGrid();
+    }
+  });
 });
