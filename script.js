@@ -13,8 +13,11 @@ document.addEventListener('DOMContentLoaded', function () {
   let contactVisible = false;
   /* כשנכנסים עם #about או #contact (חזרה מעמודי עבודה) – להציג את גריד ה-hover הרגיל */
   let preferHoverGrid = false;
+  /* מובייל: האם כבר רצה אנימציית הפתיחה של about (me.png) – מאפסים כשסוגרים את about */
+  let aboutIntroRan = false;
 
   function updatePanelVisibility() {
+    if (!aboutWrap) return;
     var anyVisible = aboutVisible || contactVisible;
     aboutWrap.classList.toggle('is-visible', anyVisible);
     aboutWrap.classList.toggle('is-contact', contactVisible);
@@ -24,6 +27,17 @@ document.addEventListener('DOMContentLoaded', function () {
     if (contactLink) contactLink.classList.toggle('active', contactVisible);
     if (aboutText) aboutText.hidden = !aboutVisible;
     if (contactText) contactText.hidden = !contactVisible;
+    /* מובייל בלבד: ABOUT פתוח = מחליפים כותרת בפסקה; CONTACT פתוח = מסתירים כותרת */
+    var mqMobile = window.matchMedia && window.matchMedia('(max-width: 768px)');
+    if (mqMobile && mqMobile.matches) {
+      document.body.classList.toggle('about-open-mobile', !!aboutVisible);
+      document.body.classList.toggle('contact-open-mobile', !!contactVisible);
+      positionMobileTitle();
+      if (!aboutVisible) aboutIntroRan = false;
+    } else {
+      document.body.classList.remove('about-open-mobile');
+      document.body.classList.remove('contact-open-mobile');
+    }
     if (typeof layoutGrid === 'function') layoutGrid();
   }
 
@@ -61,65 +75,88 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  /* Title font rotation: cycle through all fonts from "shira peleg/new fonts" every 2 seconds */
-  const titleFonts = [
-    'Acte',
-    'DingDongIrregular',
-    'Ductus',
-    'Feroniapi',
-    'Marion',
-    'OTMiniature',
-    'SuperNotoriousDot',
-    'TypefesseClaireObscure',
-    'Velvelyne',
-    'Infini',
-    'Revival'
-  ];
+  /* כותרת "Shira Peleg" – פונט קבוע OTMiniature-Bold בלבד */
   const titleEl = document.querySelector('.site-title-text');
-  let titleRotationInterval = null;
+  const titleMobileEl = document.querySelector('.site-title-text-mobile');
+  const titleWrap = document.querySelector('.site-title-wrap');
 
-  var titleBaselineY = 160; /* כמו y ב-SVG של הכותרת */
-  /* פונטים שמוקטנים עם scale מהבסיס – נשארים על אותו קו */
-  var titleBaselineScale = { 'Revival': 0.78, 'DingDongIrregular': 0.88, 'Ductus': 0.78, 'Acte': 0.8, 'SuperNotoriousDot': 1.1, 'TypefesseClaireObscure': 1.1, 'Velvelyne': 1.1 };
-  /* התאמת קו אנכי (ב-SVG: שלילי = למעלה) – Revival יושב נמוך מהשורה */
-  var titleBaselineOffsetY = { 'Revival': -18 };
+  function positionMobileTitle() {
+    if (!titleWrap) return;
+    const mq = window.matchMedia && window.matchMedia('(max-width: 768px)');
+    if (!mq || !mq.matches) {
+      /* דסקטופ – רק משחזרים מיקום כותרת, לא נוגעים ב-aboutWrap */
+      titleWrap.style.top = '45px';
+      if (aboutWrap) {
+        aboutWrap.style.position = '';
+        aboutWrap.style.left = '';
+        aboutWrap.style.right = '';
+        aboutWrap.style.transform = '';
+        aboutWrap.style.top = '';
+        aboutWrap.style.width = '';
+        aboutWrap.style.marginTop = '';
+        aboutWrap.style.padding = '';
+      }
+      return;
+    }
+    const nav = document.querySelector('.top-nav');
+    const firstWorkRow = document.querySelector('.works-rect-1') || document.querySelector('.works-rect');
+    if (!nav || !firstWorkRow) return;
 
-  function applyTitleFont(fontName) {
-    titleEl.style.fontFamily = "'" + fontName + "', Georgia, serif";
-    var scale = titleBaselineScale[fontName];
-    var offsetY = titleBaselineOffsetY[fontName];
-    if (scale != null || offsetY != null) {
-      var t = 'translate(0,' + titleBaselineY + ') scale(' + (scale || 1) + ') translate(0,' + (-titleBaselineY) + ')';
-      if (offsetY != null) t += ' translate(0,' + offsetY + ')';
-      titleEl.setAttribute('transform', t);
-    } else {
+    /* מיקום הכותרת נקבע ב-CSS לפי קווי הגריד (--mobile-band-top, גובה 160px) – לא לדרוס */
+    titleWrap.style.top = '';
+    titleWrap.style.height = '';
+
+    /* מובייל: כש-ABOUT פתוח – הפסקה מתחילה מיד מתחת לשורת הניווט העליונה */
+    if (aboutWrap) {
+      if (document.body.classList.contains('about-open-mobile')) {
+        aboutWrap.style.position = 'absolute';
+        aboutWrap.style.left = '0';
+        aboutWrap.style.right = 'auto';
+        aboutWrap.style.transform = 'none';
+        aboutWrap.style.top = '14px';
+        aboutWrap.style.width = '100%';
+        aboutWrap.style.marginTop = '0';
+        aboutWrap.style.padding = '0 12px';
+      } else {
+        aboutWrap.style.position = '';
+        aboutWrap.style.left = '';
+        aboutWrap.style.right = '';
+        aboutWrap.style.transform = '';
+        aboutWrap.style.top = '';
+        aboutWrap.style.width = '';
+        aboutWrap.style.marginTop = '';
+        aboutWrap.style.padding = '';
+      }
+    }
+  }
+
+  function applyTitleFontOTMiniature() {
+    var fontName = 'OTMiniature';
+    if (titleEl) {
+      titleEl.style.fontFamily = "'" + fontName + "', Georgia, serif";
       titleEl.removeAttribute('transform');
     }
-  }
-
-  function startTitleRotation() {
-    if (titleRotationInterval) return;
-    var currentFont = titleEl.style.fontFamily.split(',')[0].replace(/^'|'$/g, '').trim();
-    let fontIndex = titleFonts.indexOf(currentFont);
-    if (fontIndex < 0) fontIndex = 0;
-    titleEl.textContent = 'Shira Peleg';
-    applyTitleFont(titleFonts[fontIndex]);
-    titleRotationInterval = setInterval(function () {
-      fontIndex = (fontIndex + 1) % titleFonts.length;
-      applyTitleFont(titleFonts[fontIndex]);
-    }, 2000);
-  }
-
-  function stopTitleRotation() {
-    if (titleRotationInterval) {
-      clearInterval(titleRotationInterval);
-      titleRotationInterval = null;
+    if (titleMobileEl) {
+      titleMobileEl.style.fontFamily = "'" + fontName + "', Georgia, serif";
+      titleMobileEl.style.fontSize = ''; /* גודל מ-CSS (clamp) כדי שהכותרת תהיה גדולה וממורכזת */
+      titleMobileEl.style.lineHeight = '88px';
+      titleMobileEl.style.transform = '';
     }
   }
 
-  if (titleEl) {
-    startTitleRotation();
+  function restoreTitle() {
+    if (titleEl) titleEl.textContent = 'Shira Peleg';
+    if (titleMobileEl) titleMobileEl.innerHTML = 'Shira<br>Peleg';
+    applyTitleFontOTMiniature();
   }
+
+  if (titleEl || titleMobileEl) {
+    restoreTitle();
+  }
+
+  // מיקום מדויק של הכותרת במובייל – בדיוק באמצע בין הניווט לשורת העבודה הראשונה
+  positionMobileTitle();
+  window.addEventListener('resize', positionMobileTitle);
 
   /* Hover on WILDFLOWERS PROTECTION LAW: show "Broadsheet" in OTMiniature-Bold, same size */
   const wildflowersGroup = Array.from(document.querySelectorAll('.work-group')).find(function (a) {
@@ -128,13 +165,11 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   if (wildflowersGroup && titleEl) {
     wildflowersGroup.addEventListener('mouseenter', function () {
-      stopTitleRotation();
       titleEl.textContent = 'Broadsheet';
-      applyTitleFont('OTMiniature');
+      if (titleMobileEl) titleMobileEl.innerHTML = 'Broadsheet';
+      applyTitleFontOTMiniature();
     });
-    wildflowersGroup.addEventListener('mouseleave', function () {
-      startTitleRotation();
-    });
+    wildflowersGroup.addEventListener('mouseleave', restoreTitle);
   }
 
   /* Hover on STREET: show "Motion" in OTMiniature-Bold, same size */
@@ -144,13 +179,11 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   if (streetGroup && titleEl) {
     streetGroup.addEventListener('mouseenter', function () {
-      stopTitleRotation();
       titleEl.textContent = 'Motion';
-      applyTitleFont('OTMiniature');
+      if (titleMobileEl) titleMobileEl.innerHTML = 'Motion';
+      applyTitleFontOTMiniature();
     });
-    streetGroup.addEventListener('mouseleave', function () {
-      startTitleRotation();
-    });
+    streetGroup.addEventListener('mouseleave', restoreTitle);
   }
 
   /* Hover on BLOCK: show "Book Covers" in OTMiniature-Bold, same size */
@@ -160,13 +193,11 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   if (blockGroup && titleEl) {
     blockGroup.addEventListener('mouseenter', function () {
-      stopTitleRotation();
       titleEl.textContent = 'Book Covers';
-      applyTitleFont('OTMiniature');
+      if (titleMobileEl) titleMobileEl.innerHTML = 'Book Covers';
+      applyTitleFontOTMiniature();
     });
-    blockGroup.addEventListener('mouseleave', function () {
-      startTitleRotation();
-    });
+    blockGroup.addEventListener('mouseleave', restoreTitle);
   }
 
   /* Hover on THE PRINCESS WILL COME AT FOUR: show "Illustrated Book" in OTMiniature-Bold, same size */
@@ -176,13 +207,11 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   if (princessGroup && titleEl) {
     princessGroup.addEventListener('mouseenter', function () {
-      stopTitleRotation();
       titleEl.textContent = 'Illustrated Book';
-      applyTitleFont('OTMiniature');
+      if (titleMobileEl) titleMobileEl.innerHTML = 'Illustrated Book';
+      applyTitleFontOTMiniature();
     });
-    princessGroup.addEventListener('mouseleave', function () {
-      startTitleRotation();
-    });
+    princessGroup.addEventListener('mouseleave', restoreTitle);
   }
 
   /* Hover on CANAANISM: show "Motion Posters" in OTMiniature-Bold, same size */
@@ -192,13 +221,11 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   if (canaanismGroup && titleEl) {
     canaanismGroup.addEventListener('mouseenter', function () {
-      stopTitleRotation();
       titleEl.textContent = 'Motion Posters';
-      applyTitleFont('OTMiniature');
+      if (titleMobileEl) titleMobileEl.innerHTML = 'Motion Posters';
+      applyTitleFontOTMiniature();
     });
-    canaanismGroup.addEventListener('mouseleave', function () {
-      startTitleRotation();
-    });
+    canaanismGroup.addEventListener('mouseleave', restoreTitle);
   }
 
   /* Hover on LUCID DREAMS: show "Website" in OTMiniature-Bold, same size */
@@ -208,13 +235,11 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   if (lucidDreamsGroup && titleEl) {
     lucidDreamsGroup.addEventListener('mouseenter', function () {
-      stopTitleRotation();
       titleEl.textContent = 'Website';
-      applyTitleFont('OTMiniature');
+      if (titleMobileEl) titleMobileEl.innerHTML = 'Website';
+      applyTitleFontOTMiniature();
     });
-    lucidDreamsGroup.addEventListener('mouseleave', function () {
-      startTitleRotation();
-    });
+    lucidDreamsGroup.addEventListener('mouseleave', restoreTitle);
   }
 
   /* Hover on SOUTH INTERNATIONAL FILM FESTIVAL: show "Branding" in OTMiniature-Bold, same size */
@@ -224,13 +249,11 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   if (southFestivalGroup && titleEl) {
     southFestivalGroup.addEventListener('mouseenter', function () {
-      stopTitleRotation();
       titleEl.textContent = 'Branding';
-      applyTitleFont('OTMiniature');
+      if (titleMobileEl) titleMobileEl.innerHTML = 'Branding';
+      applyTitleFontOTMiniature();
     });
-    southFestivalGroup.addEventListener('mouseleave', function () {
-      startTitleRotation();
-    });
+    southFestivalGroup.addEventListener('mouseleave', restoreTitle);
   }
 
   /* Hover on LISSITZKY: show "Posters" in OTMiniature-Bold, same size */
@@ -240,13 +263,11 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   if (lissitzkyGroup && titleEl) {
     lissitzkyGroup.addEventListener('mouseenter', function () {
-      stopTitleRotation();
       titleEl.textContent = 'Posters';
-      applyTitleFont('OTMiniature');
+      if (titleMobileEl) titleMobileEl.innerHTML = 'Posters';
+      applyTitleFontOTMiniature();
     });
-    lissitzkyGroup.addEventListener('mouseleave', function () {
-      startTitleRotation();
-    });
+    lissitzkyGroup.addEventListener('mouseleave', restoreTitle);
   }
 
   /* Hover on DAILY: show "Illustrations" in OTMiniature-Bold, same size */
@@ -256,17 +277,17 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   if (dailyGroup && titleEl) {
     dailyGroup.addEventListener('mouseenter', function () {
-      stopTitleRotation();
       titleEl.textContent = 'Illustrations';
-      applyTitleFont('OTMiniature');
+      if (titleMobileEl) titleMobileEl.innerHTML = 'Illustrations';
+      applyTitleFontOTMiniature();
     });
-    dailyGroup.addEventListener('mouseleave', function () {
-      startTitleRotation();
-    });
+    dailyGroup.addEventListener('mouseleave', restoreTitle);
   }
 
   const gridEl = document.getElementById('bottom-grid');
   if (!gridEl) return;
+
+  const isMobile = window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
 
   let introRan = false;
 
@@ -293,6 +314,58 @@ document.addEventListener('DOMContentLoaded', function () {
     }, lastDisappearMs + fadeMs);
   }
 
+  /* מובייל: אנימציה זהה לאנימציית הפתיחה עם me.png – על גבי התוכן (overlay) */
+  function runAboutIntroOverlay() {
+    var overlay = document.getElementById('about-intro-overlay');
+    if (!overlay) return;
+    var width = window.innerWidth || document.documentElement.clientWidth;
+    var height = window.innerHeight || document.documentElement.clientHeight;
+    var cols = Math.max(8, Math.floor(width / 70));
+    var rows = Math.max(4, Math.floor(height / 70));
+    var cellWidth = width / cols;
+    var cellHeight = height / rows;
+    var stepMs = 18;
+    var fadeMs = 250;
+    var overlapCount = 34;
+
+    overlay.innerHTML = '';
+    var cellsContainer = document.createElement('div');
+    cellsContainer.className = 'about-intro-overlay-cells';
+    for (var r = 0; r < rows; r++) {
+      for (var c = 0; c < cols; c++) {
+        var cell = document.createElement('div');
+        cell.className = 'about-intro-overlay-cell';
+        cell.style.left = (c * cellWidth) + 'px';
+        cell.style.top = (r * cellHeight) + 'px';
+        cell.style.width = cellWidth + 'px';
+        cell.style.height = cellHeight + 'px';
+        var bg = document.createElement('div');
+        bg.className = 'about-intro-overlay-cell-img';
+        cell.appendChild(bg);
+        cellsContainer.appendChild(cell);
+      }
+    }
+    overlay.appendChild(cellsContainer);
+    var cells = overlay.querySelectorAll('.about-intro-overlay-cell');
+    overlay.classList.add('intro-animation', 'is-active');
+
+    for (var i = 0; i < cells.length; i++) {
+      (function (idx) {
+        setTimeout(function () { cells[idx].classList.add('intro-show'); }, idx * stepMs);
+      })(i);
+    }
+    for (var i = 0; i < cells.length; i++) {
+      (function (idx) {
+        setTimeout(function () { cells[idx].classList.remove('intro-show'); }, overlapCount * stepMs + idx * stepMs);
+      })(i);
+    }
+    var lastDisappearMs = overlapCount * stepMs + (cells.length - 1) * stepMs;
+    setTimeout(function () {
+      overlay.classList.remove('intro-animation', 'is-active');
+      overlay.innerHTML = '';
+    }, lastDisappearMs + fadeMs);
+  }
+
   /* Hover images: from folder "hover", named 1.jpg, 2.jpg, ... 69; start index random */
   const HOVER_IMAGE_COUNT = 69;
   const HOVER_IMAGE_EXT = 'png';
@@ -312,10 +385,68 @@ document.addEventListener('DOMContentLoaded', function () {
     return null;
   }
 
+  /* מובייל: אנימציית פתיחת העמוד – אותה נקודת התחלה כמו about (מקצה עליון), עם תמונות hover */
+  function runOpeningOverlayIntro() {
+    var overlay = document.getElementById('about-intro-overlay');
+    if (!overlay) return;
+    var width = window.innerWidth || document.documentElement.clientWidth;
+    var height = window.innerHeight || document.documentElement.clientHeight;
+    var cols = Math.max(8, Math.floor(width / 70));
+    var rows = Math.max(4, Math.floor(height / 70));
+    var cellWidth = width / cols;
+    var cellHeight = height / rows;
+    var stepMs = 18;
+    var fadeMs = 250;
+    var overlapCount = 34;
+    var startIndex = 1 + Math.floor(Math.random() * HOVER_IMAGE_COUNT);
+
+    overlay.innerHTML = '';
+    var cellsContainer = document.createElement('div');
+    cellsContainer.className = 'about-intro-overlay-cells';
+    var cellIndex = 0;
+    for (var r = 0; r < rows; r++) {
+      for (var c = 0; c < cols; c++) {
+        var imageNum = ((startIndex - 1 + cellIndex) % HOVER_IMAGE_COUNT) + 1;
+        var cell = document.createElement('div');
+        cell.className = 'about-intro-overlay-cell';
+        cell.style.left = (c * cellWidth) + 'px';
+        cell.style.top = (r * cellHeight) + 'px';
+        cell.style.width = cellWidth + 'px';
+        cell.style.height = cellHeight + 'px';
+        var bg = document.createElement('div');
+        bg.className = 'about-intro-overlay-cell-img';
+        bg.style.backgroundImage = "url('" + HOVER_BASE + imageNum + '.' + HOVER_IMAGE_EXT + "')";
+        cell.appendChild(bg);
+        cellsContainer.appendChild(cell);
+        cellIndex++;
+      }
+    }
+    overlay.appendChild(cellsContainer);
+    var cells = overlay.querySelectorAll('.about-intro-overlay-cell');
+    overlay.classList.add('intro-animation', 'is-active');
+
+    for (var i = 0; i < cells.length; i++) {
+      (function (idx) {
+        setTimeout(function () { cells[idx].classList.add('intro-show'); }, idx * stepMs);
+      })(i);
+    }
+    for (var i = 0; i < cells.length; i++) {
+      (function (idx) {
+        setTimeout(function () { cells[idx].classList.remove('intro-show'); }, overlapCount * stepMs + idx * stepMs);
+      })(i);
+    }
+    var lastDisappearMs = overlapCount * stepMs + (cells.length - 1) * stepMs;
+    setTimeout(function () {
+      overlay.classList.remove('intro-animation', 'is-active');
+      overlay.innerHTML = '';
+    }, lastDisappearMs + fadeMs);
+  }
+
   function layoutGrid() {
-    const topOffset = 305;
+    const topOffset = isMobile ? 0 : 305;
     const width = document.body.offsetWidth;
-    const height = document.body.offsetHeight - topOffset;
+    const totalHeight = isMobile ? window.innerHeight : document.body.offsetHeight;
+    const height = totalHeight - topOffset;
     if (height <= 0 || width <= 0) return;
 
     /* חלוקה למלבנים שווים: N עמודות, M שורות – כל תא באותו גודל */
@@ -375,25 +506,27 @@ document.addEventListener('DOMContentLoaded', function () {
           ? "url('me.png')"
           : "url('" + HOVER_BASE + imageNum + '.' + HOVER_IMAGE_EXT + "')";
         cell.appendChild(bg);
-        (function (cellEl, imgEl) {
-          var hideTimeout = null;
-          cellEl.addEventListener('mouseenter', function () {
-            if (hideTimeout) clearTimeout(hideTimeout);
-            imgEl.classList.add('is-visible');
+        if (!isMobile) {
+          (function (cellEl, imgEl) {
+            var hideTimeout = null;
+            cellEl.addEventListener('mouseenter', function () {
+              if (hideTimeout) clearTimeout(hideTimeout);
+              imgEl.classList.add('is-visible');
+            });
+            cellEl.addEventListener('mouseleave', function () {
+              hideTimeout = setTimeout(function () {
+                imgEl.classList.remove('is-visible');
+                hideTimeout = null;
+              }, 500);
+            });
+          })(cell, bg);
+          cell.addEventListener('click', function () {
+            var num = parseInt(cell.dataset.imageNum, 10);
+            if (aboutVisible && !preferHoverGrid) return;
+            var page = getPageForImageNum(num);
+            if (page) window.location.href = page + '.html';
           });
-          cellEl.addEventListener('mouseleave', function () {
-            hideTimeout = setTimeout(function () {
-              imgEl.classList.remove('is-visible');
-              hideTimeout = null;
-            }, 500);
-          });
-        })(cell, bg);
-        cell.addEventListener('click', function () {
-          var num = parseInt(cell.dataset.imageNum, 10);
-          if (aboutVisible && !preferHoverGrid) return;
-          var page = getPageForImageNum(num);
-          if (page) window.location.href = page + '.html';
-        });
+        }
         cellsContainer.appendChild(cell);
         cellIndex++;
       }
@@ -408,7 +541,16 @@ document.addEventListener('DOMContentLoaded', function () {
     var showIntro = isReload || fromOutside;
     if (!introRan && isHome && showIntro) {
       introRan = true;
-      setTimeout(runGridIntro, 80);
+      if (isMobile) {
+        setTimeout(runOpeningOverlayIntro, 80);
+      } else {
+        setTimeout(runGridIntro, 80);
+      }
+    }
+    /* מובייל: כשפאנל about נפתח – אנימציה זהה לאנימציית הפתיחה עם me.png מעל התוכן */
+    if (isMobile && aboutVisible && !preferHoverGrid && !aboutIntroRan) {
+      aboutIntroRan = true;
+      setTimeout(runAboutIntroOverlay, 80);
     }
   }
 

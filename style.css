@@ -98,6 +98,7 @@ body {
   display: flex;
   align-items: center;
   box-sizing: border-box;
+  z-index: 20;
 }
 
 .top-nav .nav-link {
@@ -115,6 +116,11 @@ body {
 .top-nav .nav-link:hover {
   background: black;
   color: white;
+}
+
+/* קווי גריד למובייל – מוסתרים בדסקטופ, מופעלים רק במובייל בעמוד הפתיחה */
+.mobile-title-grid-line {
+  display: none;
 }
 
 .top-line {
@@ -611,6 +617,7 @@ body {
   box-sizing: border-box;
   font-family: 'OTMiniature', Georgia, serif;
   font-weight: 700;
+  /* גודל מקורי בדסקטופ */
   font-size: clamp(36px, 5.5vw, 48px);
   line-height: 1.1;
   color: black;
@@ -707,14 +714,22 @@ body {
   overflow: visible;
 }
 
+/* דסקטופ: רווח אותיות מוגדל במעט בכותרת ובמילים שמחליפות אותה בהובר */
 .site-title-text {
   font-size: clamp(80px, 17.5vw, 155px);
-  font-size-adjust: 0.48; /* אחיד גודל ויזואלי בין פונטים (x-height) */
+  font-size-adjust: 0.48;
   font-weight: 700;
   fill: black;
+  letter-spacing: 0.03em;
+  font-family: 'OTMiniature', Georgia, serif;
+}
+
+/* טקסט כותרת חלופי למובייל (שתי שורות) – מוסתר בדסקטופ, בפונט OTMiniature */
+.site-title-text-mobile {
+  display: none;
+  font-family: 'OTMiniature', Georgia, serif;
+  font-weight: 700;
   letter-spacing: -0.02em;
-  font-family: 'Acte', Georgia, serif;
-  /* In SVG, y=160 is the alphabetic baseline – same line for every font */
 }
 
 /* About paragraph: between title and right edge; Contact paragraph: starts at vertical line left of CONTACT (50%) */
@@ -757,6 +772,7 @@ body {
 
 .contact-paragraph-text a {
   color: #FFC48A;
+  text-decoration: underline;
 }
 
 .top-nav .nav-link.active {
@@ -890,4 +906,469 @@ body {
   flex-shrink: 0;
 }
 
+/* שורת ניווט תחתונה (מובייל) – מוצגת רק במובייל בעמודי עבודה */
+.bottom-nav-mobile-wrap {
+  display: none;
+}
+
+/* כפתור גלול למעלה – מוצג רק במובייל בעמודי עבודות (ראה media query) */
+.scroll-to-top-btn {
+  display: none;
+}
+
 /* Desktop-first: base styles target desktop; use max-width media queries to adapt down */
+
+/* ===== Mobile layout (עד 768px) ===== */
+@media (max-width: 768px) {
+
+  /* מסגרת המסך – גודל קבוע, גלילה רק בתוך המסגרת (כמו בדסקטופ), מחוץ למסגרת תמיד לבן */
+  html {
+    background: white;
+    box-sizing: border-box;
+    width: calc(100vw - 10px);
+    height: calc(100vh - 10px);
+    min-height: calc(100vh - 10px);
+    margin: 5px;
+    padding: 0;
+    border: none;
+    box-shadow: inset 0 0 0 1px black;
+    overflow: hidden;
+  }
+
+  /* 1. גלילה רק בתוך המסגרת – body הוא אזור הגלילה, סרגלים מוסתרים */
+  body {
+    margin: 0;
+    padding-top: 52px; /* רווח לניווט העליון (6px + 45px + 1px קו) */
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    box-sizing: border-box;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: white;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    display: grid;
+    grid-template-rows: auto auto auto repeat(9, 1fr);
+  }
+
+  body::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* 2. ניווט עליון – fixed, בתוך המסגרת */
+  .top-nav {
+    position: fixed;
+    top: 6px;
+    left: 6px;
+    right: 6px;
+    height: 45px;
+    z-index: 20;
+    background: white;
+  }
+
+  .top-line {
+    position: fixed;
+    top: 51px; /* 6px + 45px */
+    left: 6px;
+    right: 6px;
+    height: 1px;
+    border: none;
+    box-shadow: inset 0 0 0 1px black; /* כמו קו המסגרת */
+    z-index: 19;
+  }
+
+  .nav-divider {
+    position: fixed;
+    top: 6px;
+    z-index: 20;
+  }
+
+  /* מחיצות אנכיות מתיישרות עם תאי הניווט – ה-fill השחור מקו לקו */
+  .nav-divider-1 { left: calc(6px + (100vw - 12px) * 0.25); }
+  .nav-divider-2 { left: calc(6px + (100vw - 12px) * 0.5); }
+  .nav-divider-3 { left: calc(6px + (100vw - 12px) * 0.75); }
+
+  .top-nav .nav-link {
+    font-size: 0.75rem;
+  }
+
+  /* קווי גריד בלתי נראים לכותרת: 160px בין הקווים, ממורכזים בין קו תחתון ניווט (51px) לתחילת שורות העבודות */
+  :root {
+    --mobile-nav-bottom: 51px;
+    --mobile-works-start: 342px;
+    --mobile-band-center: calc((var(--mobile-nav-bottom) + var(--mobile-works-start)) / 2);
+    --mobile-band-top: calc(var(--mobile-band-center) - 80px);
+  }
+  /* גריד הכותרת במובייל – מוסתר (אין בו צורך) */
+  .mobile-title-grid-line {
+    display: none;
+  }
+
+  /* 3. כותרת "Shira Peleg" – הוזזה 60px למעלה */
+  .site-title-wrap {
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(90vw, 600px);
+    top: calc(var(--mobile-band-top) - 60px);
+    min-height: 160px;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+  }
+
+  /* במובייל משתמשים בגרסת הטקסט הדו-שורתית במקום ה-SVG */
+  .site-title-svg {
+    display: none;
+  }
+
+  /* כותרת גדולה וממורכזת כמו בצילום – גודל רספונסיבי, רווח צמוד בין Shira ל-Peleg */
+  .site-title-text-mobile {
+    display: block;
+    font-size: clamp(72px, 22vw, 100px);
+    line-height: 88px;
+    min-height: 160px;
+    text-align: center;
+    box-sizing: border-box;
+    letter-spacing: 0.05em;
+  }
+
+  /* במובייל בלבד: כש-ABOUT פתוח – הכותרת מתחבאת והפסקה מופיעה באותו מקום */
+  body.about-open-mobile .site-title-wrap {
+    visibility: hidden;
+  }
+
+  /* overlay אנימציית about – מעל כל התוכן, גריד me.png כמו אנימציית הפתיחה */
+  .about-intro-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .about-intro-overlay.is-active {
+    display: block;
+  }
+  .about-intro-overlay .about-intro-overlay-cells {
+    position: absolute;
+    inset: 0;
+  }
+  .about-intro-overlay .about-intro-overlay-cell {
+    position: absolute;
+    overflow: hidden;
+  }
+  .about-intro-overlay .about-intro-overlay-cell-img {
+    position: absolute;
+    inset: 0;
+    background-image: url('me.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0;
+  }
+  .about-intro-overlay.intro-animation .about-intro-overlay-cell .about-intro-overlay-cell-img {
+    opacity: 0;
+    transition: none;
+  }
+  .about-intro-overlay.intro-animation .about-intro-overlay-cell.intro-show .about-intro-overlay-cell-img {
+    opacity: 1;
+  }
+
+  /* כש-CONTACT פתוח במובייל – רק הכותרת מוסתרת, טקסט המייל/מספר מופיע במקומה, שום דבר לא זז */
+  body.contact-open-mobile .site-title-wrap {
+    visibility: hidden;
+  }
+  body.contact-open-mobile .about-paragraph-wrap {
+    position: relative;
+    height: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+  }
+  body.contact-open-mobile .about-paragraph-wrap .contact-paragraph-text {
+    position: absolute;
+    top: 8px;
+    left: 12px;
+    right: 12px;
+    z-index: 10;
+  }
+
+  /* 4. טקסט ABOUT/CONTACT – במקום טור צר בצד, הופך לבלוק מלא מתחת לכותרת */
+  .about-paragraph-wrap {
+    position: static;
+    left: auto;
+    right: auto;
+    top: auto;
+    height: auto;
+    max-height: none;
+    width: 100%;
+    margin-top: 8px;
+    padding: 0 12px 12px;
+    overflow: visible;
+  }
+
+  .about-paragraph-wrap.is-contact {
+    left: auto;
+    top: auto;
+    height: auto;
+  }
+
+  .about-paragraph-text {
+    font-size: 0.875rem; /* כמו הפסקאות הרצות בעמודי העבודה */
+  }
+
+  .contact-paragraph-text {
+    font-size: calc(0.875rem + 15px); /* מובייל: +5px מהבסיס */
+  }
+
+  /* 5. שורת שמות העבודות – כל פריט שורה בפני עצמו, בלי חיתוך טקסט */
+  .site-title-wrap {
+    grid-row: 1;
+  }
+  .about-paragraph-wrap {
+    grid-row: 2;
+  }
+  .bottom-rectangle-grid {
+    grid-row: 3;
+    margin-bottom: 30px; /* רווח מעל רשימת העבודות – לא בתוך המלבנים */
+  }
+
+  .works-rect {
+    position: static;
+    top: auto;
+    left: auto;
+    right: auto;
+    height: auto;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .works-rect-1,
+  .works-rect-2 {
+    display: contents;
+  }
+
+  /* מיקום כל עבודה בשורת גריד קבועה – 9 מלבנים שווים בגובה */
+  .works-rect-1 .work-group:nth-child(1) { grid-row: 4; }
+  .works-rect-1 .work-group:nth-child(2) { grid-row: 5; }
+  .works-rect-1 .work-group:nth-child(3) { grid-row: 6; }
+  .works-rect-1 .work-group:nth-child(4) { grid-row: 7; }
+  .works-rect-2 .work-group:nth-child(1) { grid-row: 8; }
+  .works-rect-2 .work-group:nth-child(2) { grid-row: 9; }
+  .works-rect-2 .work-group:nth-child(3) { grid-row: 10; }
+  .works-rect-2 .work-group:nth-child(4) { grid-row: 11; }
+  .works-rect-2 .work-group:nth-child(5) { grid-row: 12; }
+
+  .work-group {
+    border-top: 1px solid black;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .work-item {
+    font-size: 0.8rem;
+    padding: 0 0.5em;      /* בלי רווח אנכי נוסף, כדי שהגובה יישאר 45px */
+    white-space: normal;
+    text-align: center;
+  }
+
+  .work-sep {
+    display: none;
+  }
+
+  /* 6. הגריד התחתון – שיהיה פשוט בלוק מתחת, לא "מסגרת" קשיחה */
+  .bottom-rectangle-grid {
+    position: static;
+    top: auto;
+    bottom: auto;
+    width: 100%;
+    height: auto;
+    min-height: 260px;
+  }
+
+  .bottom-rectangle-grid svg {
+    display: none;
+  }
+
+  /* במובייל: ריבועי ההובר פתוחים רק באנימציית הפתיחה – אח"כ אין אינטראקציה */
+  .bottom-rectangle-grid .grid-cell {
+    pointer-events: none;
+  }
+
+  /* 7. קווי מסגרת מיותרים במובייל
+     משאירים את הקווים של שורת הניווט העליונה (top-line + nav-divider)
+     ומסתירים רק את הקווים שמתחתיה */
+  .nav-line-below,
+  .nav-line-below-2,
+  .nav-line-below-3 {
+    display: none;
+  }
+
+  /* ===== עמודי עבודות (.work-page) ===== */
+
+  /* בעמודי עבודות – בלי grid כדי שהכותרות והתוכן יוצגו בזרימה רגילה */
+  body.work-page {
+    display: block;
+  }
+
+  /* במובייל: הקו שמתחת לניווט עד המסגרת */
+  .work-page .top-line {
+    left: 6px;
+    right: 6px;
+  }
+
+  /* במובייל: ניווט עליון → טקסט (כמו העמודה השמאלית) → גלריה נגללת */
+  .work-page main {
+    position: static;
+    left: auto;
+    right: auto;
+    top: auto;
+    bottom: auto;
+    width: 100%;
+    height: auto;
+    padding: 0;
+    /* מרווח גדול יותר – התמונות מתחילות הרבה אחרי שורת הניווט והטקסט */
+    margin-top: 40px;
+    overflow: visible;
+  }
+
+  /* כותרות בעמודי עבודות – גלויות, יישור שמאל כמו פסקת הטקסט (12px); גוש הטקסט העליון כקבוצה 10px למעלה */
+  .work-page .work-page-hover-title {
+    display: block !important;
+    visibility: visible !important;
+    position: static;
+    width: 100%;
+    padding: 16px 12px 0;
+    box-sizing: border-box;
+    font-family: 'OTMiniature', Georgia, serif;
+    font-weight: 700;
+    font-size: 2.1rem;
+    line-height: 1.1;
+    margin: 20px 0 0; /* 30px → 20px: הזזת גוש הטקסט העליון 10px למעלה */
+    color: black;
+    opacity: 1;
+    z-index: 5;
+  }
+
+  .work-page .work-page-left-nav-title {
+    display: block !important;
+    visibility: visible !important;
+    position: static;
+    width: 100%;
+    padding: 8px 12px 0;
+    box-sizing: border-box;
+    margin: 0;
+    color: black;
+    opacity: 1;
+  }
+
+  .work-page-left-footer {
+    position: static;
+    width: 100%;
+    /* רווח עליון מהכותרת השנייה – יוגדר כך שיתאים גם לרווח שמתחת לפסקה */
+    padding: 24px 12px 0;
+    box-sizing: border-box;
+  }
+
+  /* במובייל: רווח בין שם העבודה לפסקת התיאור
+     שווה לרווח בין פסקת התיאור לשורת המפרט */
+  .work-page-left-copy {
+    margin: 0;
+  }
+
+  .work-page-left-specs {
+    margin: 24px 0 0 0;
+  }
+
+  /* בעמודי עבודות במובייל: קווי החלוקה והמחיצה מוסתרים; PREV/NEXT מוצגים בשורה התחתונה בתוך המסגרת */
+  .nav-divider-full,
+  .nav-line-left,
+  .nav-line-second,
+  .nav-rect-divider,
+  .work-page .nav-rect-prev,
+  .work-page .nav-rect-next {
+    display: none;
+  }
+
+  /* שורת ניווט תחתונה – fixed, בתוך המסגרת (בעמודי עבודות) */
+  .bottom-nav-mobile-wrap {
+    display: flex;
+    flex-direction: row;
+    position: fixed;
+    bottom: 6px;
+    left: 6px;
+    right: 6px;
+    width: auto;
+    height: 45px;
+    border-top: 1px solid black; /* עובי כמו קו המסגרת */
+    background: white;
+    box-sizing: border-box;
+    z-index: 20;
+  }
+
+  .work-page {
+    padding-bottom: 45px;
+  }
+
+  .bottom-nav-mobile-wrap .bottom-nav-prev,
+  .bottom-nav-mobile-wrap .bottom-nav-next {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'PP Neue Montreal Mono', monospace;
+    font-size: 0.75rem;
+    color: black;
+    text-decoration: none;
+    background: white;
+  }
+
+  .bottom-nav-mobile-wrap .bottom-nav-next {
+    border-left: 1px solid black;
+    box-sizing: border-box;
+  }
+
+  .bottom-nav-mobile-wrap .bottom-nav-prev:hover,
+  .bottom-nav-mobile-wrap .bottom-nav-next:hover {
+    background: black;
+    color: white;
+  }
+
+  /* כפתור גלול לראש העמוד – fixed בתחתית ימין, ריבוע עם stroke שחור וחץ למעלה (עמודי עבודות בלבד) */
+  .work-page .scroll-to-top-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    bottom: 57px; /* מעל שורת PREV/NEXT */
+    right: 11px;
+    width: 40px;
+    height: 40px;
+    border: 1px solid black;
+    background: white;
+    border-radius: 0;
+    color: black;
+    text-decoration: none;
+    box-sizing: border-box;
+    z-index: 21;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .work-page .scroll-to-top-btn.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .work-page .scroll-to-top-btn svg {
+    flex-shrink: 0;
+  }
+}

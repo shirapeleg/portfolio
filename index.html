@@ -5,27 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title></title>
   <link rel="stylesheet" href="style.css">
-  <!-- Preload title fonts to avoid layout jump when switching (from new fonts) -->
-  <link rel="preload" href="shira peleg/new fonts/Acte.otf" as="font" type="font/otf" crossorigin>
-  <link rel="preload" href="shira peleg/new fonts/DingDongIrregular.otf" as="font" type="font/otf" crossorigin>
-  <link rel="preload" href="shira peleg/new fonts/Ductus.otf" as="font" type="font/otf" crossorigin>
-  <link rel="preload" href="shira peleg/new fonts/Feroniapi-MediumItalic.otf" as="font" type="font/otf" crossorigin>
-  <link rel="preload" href="shira peleg/new fonts/Marion.otf" as="font" type="font/otf" crossorigin>
-  <link rel="preload" href="shira peleg/new fonts/OTMiniature-Bold.otf" as="font" type="font/otf" crossorigin>
-  <link rel="preload" href="shira peleg/new fonts/SuperNotoriousDot.otf" as="font" type="font/otf" crossorigin>
-  <link rel="preload" href="shira peleg/new fonts/Typefesse_Claire-Obscure.otf" as="font" type="font/otf" crossorigin>
-  <link rel="preload" href="shira peleg/new fonts/Velvelyne-Book.otf" as="font" type="font/otf" crossorigin>
-  <link rel="preload" href="shira peleg/new fonts/infini.otf" as="font" type="font/otf" crossorigin>
-  <link rel="preload" href="shira peleg/new fonts/revival.otf" as="font" type="font/otf" crossorigin>
+  <!-- Preload title fonts to avoid layout jump when switching -->
+  <link rel="preload" href="shira peleg/AlfaBravo-MediumItalic.otf" as="font" type="font/otf" crossorigin>
+  <link rel="preload" href="shira peleg/NarkissAsafMono-Bold-TRIAL.otf" as="font" type="font/otf" crossorigin>
+  <link rel="preload" href="shira peleg/LEVIT_1950-BLACKEXTENDED.OTF" as="font" type="font/otf" crossorigin>
+  <link rel="preload" href="shira peleg/anomalia-regular-aaa.otf" as="font" type="font/otf" crossorigin>
+  <link rel="preload" href="shira peleg/FedraSerifHB-Regular.otf" as="font" type="font/otf" crossorigin>
+  <link rel="preload" href="shira peleg/caravan-90-aaa.otf" as="font" type="font/otf" crossorigin>
+  <link rel="preload" href="shira peleg/EzerRutzTRIALONLY-Regular.otf" as="font" type="font/otf" crossorigin>
+  <link rel="preload" href="shira peleg/ArbelG-Regular.otf" as="font" type="font/otf" crossorigin>
+  <link rel="preload" href="shira peleg/atlas-regular-aaa.otf" as="font" type="font/otf" crossorigin>
+  <link rel="preload" href="shira peleg/OTMiniature-Bold.otf" as="font" type="font/otf" crossorigin>
 </head>
 <body>
   <nav class="top-nav" aria-label="ניווט ראשי">
     <a href="index.html" class="nav-link">HOME</a>
-    <a href="#about" class="nav-link">ABOUT</a>
+    <a href="#" class="nav-link">ABOUT</a>
     <a href="#" class="nav-link">CONTACT</a>
     <a href="cv.pdf" class="nav-link" target="_blank" rel="noopener">CV</a>
   </nav>
   <div class="top-line" aria-hidden="true"></div>
+  <div class="mobile-title-grid-line mobile-title-grid-line-top" aria-hidden="true"></div>
+  <div class="mobile-title-grid-line mobile-title-grid-line-bottom" aria-hidden="true"></div>
   <div class="nav-line-below" aria-hidden="true"></div>
   <div class="nav-line-below-2" aria-hidden="true"></div>
   <div class="nav-line-below-3" aria-hidden="true"></div>
@@ -37,11 +38,20 @@
       <svg class="site-title-svg" viewBox="0 0 800 200" preserveAspectRatio="xMin yMax meet" aria-hidden="true">
         <text x="0" y="160" class="site-title-text">Shira Peleg</text>
       </svg>
+      <div class="site-title-text-mobile">
+        Shira<br>Peleg
+      </div>
     </h1>
   </div>
-  <div id="about-paragraph-wrap" class="about-paragraph-wrap" aria-hidden="true" hidden>
-    <p id="about-paragraph-text" class="about-paragraph-text">Hi, I'm Shira Peleg, 27 years old, a fourth-year Visual Communication student at Bezalel, currently living in Jerusalem. I love illustration, typography, and graphic design, and I create both hand-drawn and digital imagery. In my work, I tend to combine order and clean composition with vibrant color, always seeking a balance between minimalist design and rich, lively expression. I enjoy collaborating with people, experimenting with diverse and challenging formats, and exploring the boundaries of visual language and design.</p>
-    <p id="contact-paragraph-text" class="about-paragraph-text contact-paragraph-text" hidden><a href="mailto:shirapeleg98@gmail.com" target="_blank" rel="noopener">shirapeleg98@gmail.com</a><br>052-8367040</p>
+  <!-- About / Contact: בדסקטופ – מימין לכותרת; במובייל – בלחיצה על ABOUT מופיע במקום הכותרת -->
+  <div id="about-paragraph-wrap" class="about-paragraph-wrap" hidden aria-hidden="true">
+    <p id="about-paragraph-text" class="about-paragraph-text">
+      Hi, I'm Shira Peleg, 27 years old, a fourth-year Visual Communication student at Bezalel, currently living in Jerusalem. I love illustration, typography, and graphic design, and I create both hand-drawn and digital imagery. In my work, I tend to combine order and clean composition with vibrant color, always seeking a balance between minimalist design and rich, lively expression. I enjoy collaborating with people, experimenting with diverse and challenging formats, and exploring the boundaries of visual language and design.
+    </p>
+    <p id="contact-paragraph-text" class="about-paragraph-text contact-paragraph-text" hidden>
+      <a href="mailto:shirapeleg98@gmail.com">shirapeleg98@gmail.com</a><br>
+      052-8367040
+    </p>
   </div>
   <div id="bottom-grid" class="bottom-rectangle-grid" aria-hidden="true"></div>
   <div class="works-rect works-rect-1" aria-label="עבודות שורה 1">
@@ -60,6 +70,8 @@
   <header></header>
   <main></main>
   <footer></footer>
+  <!-- מובייל: overlay לאנימציית about (me.png) מעל התוכן -->
+  <div id="about-intro-overlay" class="about-intro-overlay" aria-hidden="true"></div>
   <script src="script.js"></script>
 </body>
 </html>
