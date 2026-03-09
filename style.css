@@ -1122,7 +1122,7 @@ body {
   }
 
   .about-paragraph-text {
-    font-size: calc(0.875rem - 2px); /* כמו הפסקאות הרצות בעמודי העבודה, מוקטן ב-2px במובייל */
+    font-size: 0.875rem; /* כמו הפסקאות הרצות בעמודי העבודה, ללא הקטנה נוספת במובייל */
   }
 
   .contact-paragraph-text {
@@ -1264,6 +1264,13 @@ body {
     min-height: 200px;
     /* בלי aspect-ratio – הווידאו נמדד לפי הרוחב והגובה הפנימי (כמו תמונות) וממלא את הרוחב */
     aspect-ratio: auto;
+  }
+
+  /* גלריה South – במובייל: flex בעמודה אחת כדי שסדר התמונות יהיה תמיד לפי DOM גם בטלפון אמיתי (column-count עלול ליצור סדר שונה בחלק מהדפדפנים) */
+  .work-page .work-page-gallery-2col .work-page-gallery-rest {
+    column-count: 1;
+    display: flex;
+    flex-direction: column;
   }
 
   /* כותרות בעמודי עבודות – גלויות, יישור שמאל כמו פסקת הטקסט (12px); גוש הטקסט העליון כקבוצה 10px למעלה */
