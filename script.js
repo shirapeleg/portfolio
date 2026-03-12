@@ -649,7 +649,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var navEntry = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
     var isReload = navEntry && navEntry.type === 'reload';
     var fromOutside = !document.referrer || document.referrer.indexOf(window.location.origin) !== 0;
-    var showIntro = isHome && !introRan;
+    var showIntro = isHome && !introRan && (isReload || fromOutside);
     if (showIntro) {
       introRan = true;
       if (isMobile) {
