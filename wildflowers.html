@@ -33,7 +33,7 @@
     <p class="work-page-left-specs">10 pages, 55*37 cm, indigo print, glue binding, hebrew, 2025</p>
   </div>
   <main>
-    <div class="work-page-gallery">
+    <div class="work-page-gallery work-page-gallery-wildflowers">
       <video
         src="WILDFLOWERS PROTECTION LAW/10.mp4"
         title="Wildflowers Protection Law – 1"
@@ -63,18 +63,224 @@
   <script src="scroll-to-top.js"></script>
   <script>
     (function() {
-      if (!window.matchMedia || !window.matchMedia('(max-width: 768px)').matches) return;
+      var isMobile = !!(window.matchMedia && window.matchMedia('(max-width: 768px)').matches);
+
+      // #region agent log
+      fetch('http://127.0.0.1:7247/ingest/d1d55d11-2425-4121-ba9f-9847ec6587ce', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: 'wildflowers_mobile_init_' + Date.now(),
+          timestamp: Date.now(),
+          runId: 'initial',
+          hypothesisId: 'H2',
+          location: 'wildflowers.html:66',
+          message: 'Wildflowers mobile init check',
+          data: { isMobile: isMobile }
+        })
+      }).catch(function () {});
+      // #endregion
+
+      if (!isMobile) return;
+
       var video = document.querySelector('.work-page-gallery video');
+
+      // #region agent log
+      fetch('http://127.0.0.1:7247/ingest/d1d55d11-2425-4121-ba9f-9847ec6587ce', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: 'wildflowers_video_presence_' + Date.now(),
+          timestamp: Date.now(),
+          runId: 'initial',
+          hypothesisId: 'H4',
+          location: 'wildflowers.html:74',
+          message: 'Wildflowers video element presence',
+          data: { hasVideo: !!video }
+        })
+      }).catch(function () {});
+      // #endregion
+
       if (!video) return;
-      function tryPlay() {
+
+      // #region agent log
+      // Track whether user interaction events fire at all (tests H3).
+      ['touchstart', 'click', 'scroll'].forEach(function (type) {
+        document.addEventListener(type, function (event) {
+          fetch('http://127.0.0.1:7247/ingest/d1d55d11-2425-4121-ba9f-9847ec6587ce', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id: 'wildflowers_user_event_' + Date.now(),
+              timestamp: Date.now(),
+              runId: 'initial',
+              hypothesisId: 'H3',
+              location: 'wildflowers.html:86',
+              message: 'Wildflowers user interaction event',
+              data: {
+                eventType: event.type
+              }
+            })
+          }).catch(function () {});
+        }, { passive: true });
+      });
+      // #endregion
+
+      function tryPlay(event) {
+        var evtType = event && event.type ? event.type : 'unknown';
+
+        // #region agent log
+        fetch('http://127.0.0.1:7247/ingest/d1d55d11-2425-4121-ba9f-9847ec6587ce', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: 'wildflowers_before_play_' + Date.now(),
+            timestamp: Date.now(),
+            runId: 'initial',
+            hypothesisId: 'H1_H3_H5',
+            location: 'wildflowers.html:90',
+            message: 'Wildflowers before attempting play',
+            data: {
+              eventType: evtType,
+              pausedBefore: video.paused,
+              readyState: video.readyState,
+              muted: video.muted,
+              autoplay: video.autoplay
+            }
+          })
+        }).catch(function () {});
+        // #endregion
+
         if (video.paused) {
-          video.play().catch(function() {});
+          var playPromise = video.play();
+
+          if (playPromise && typeof playPromise.then === 'function') {
+            playPromise.then(function () {
+              // #region agent log
+              fetch('http://127.0.0.1:7247/ingest/d1d55d11-2425-4121-ba9f-9847ec6587ce', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  id: 'wildflowers_play_success_' + Date.now(),
+                  timestamp: Date.now(),
+                  runId: 'initial',
+                  hypothesisId: 'H1',
+                  location: 'wildflowers.html:111',
+                  message: 'Wildflowers video play() succeeded',
+                  data: {
+                    eventType: evtType,
+                    pausedAfter: video.paused,
+                    readyState: video.readyState
+                  }
+                })
+              }).catch(function () {});
+              // #endregion
+            }).catch(function (error) {
+              // #region agent log
+              fetch('http://127.0.0.1:7247/ingest/d1d55d11-2425-4121-ba9f-9847ec6587ce', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  id: 'wildflowers_play_error_' + Date.now(),
+                  timestamp: Date.now(),
+                  runId: 'initial',
+                  hypothesisId: 'H1',
+                  location: 'wildflowers.html:123',
+                  message: 'Wildflowers video play() failed',
+                  data: {
+                    eventType: evtType,
+                    errorName: error && error.name,
+                    errorMessage: error && error.message
+                  }
+                })
+              }).catch(function () {});
+              // #endregion
+            });
+          }
         }
+
+        // #region agent log
+        fetch('http://127.0.0.1:7247/ingest/d1d55d11-2425-4121-ba9f-9847ec6587ce', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: 'wildflowers_after_tryPlay_' + Date.now(),
+            timestamp: Date.now(),
+            runId: 'initial',
+            hypothesisId: 'H3',
+            location: 'wildflowers.html:140',
+            message: 'Wildflowers after tryPlay handler',
+            data: {
+              eventType: evtType,
+              pausedNow: video.paused,
+              readyStateNow: video.readyState
+            }
+          })
+        }).catch(function () {});
+        // #endregion
+
         document.removeEventListener('touchstart', tryPlay, { passive: true });
         document.removeEventListener('scroll', tryPlay, { passive: true });
       }
+
       document.addEventListener('touchstart', tryPlay, { passive: true });
       document.addEventListener('scroll', tryPlay, { passive: true });
+
+      // #region agent log
+      // Log key video lifecycle events to distinguish loading/codec issues from autoplay policy (tests H1, H5).
+      ['loadeddata', 'canplay', 'canplaythrough', 'play', 'playing', 'pause', 'error'].forEach(function (type) {
+        video.addEventListener(type, function (event) {
+          var err = video.error || null;
+          fetch('http://127.0.0.1:7247/ingest/d1d55d11-2425-4121-ba9f-9847ec6587ce', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id: 'wildflowers_video_event_' + Date.now(),
+              timestamp: Date.now(),
+              runId: 'initial',
+              hypothesisId: 'H1_H5',
+              location: 'wildflowers.html:163',
+              message: 'Wildflowers video event',
+              data: {
+                eventType: event.type,
+                readyState: video.readyState,
+                paused: video.paused,
+                networkState: video.networkState,
+                errorCode: err && err.code,
+                errorMessage: err && err.message
+              }
+            })
+          }).catch(function () {});
+        });
+      });
+      // #endregion
+
+      // When video starts playing on mobile Safari, explicitly remove the poster image to avoid a static-looking frame.
+      video.addEventListener('playing', function (event) {
+        var hadPoster = video.hasAttribute('poster');
+
+        // #region agent log
+        fetch('http://127.0.0.1:7247/ingest/d1d55d11-2425-4121-ba9f-9847ec6587ce', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: 'wildflowers_poster_remove_' + Date.now(),
+            timestamp: Date.now(),
+            runId: 'post-fix',
+            hypothesisId: 'H6',
+            location: 'wildflowers.html:189',
+            message: 'Wildflowers remove poster on playing',
+            data: {
+              hadPosterBefore: hadPoster
+            }
+          })
+        }).catch(function () {});
+        // #endregion
+
+        if (hadPoster) {
+          video.removeAttribute('poster');
+        }
+      });
     })();
   </script>
 </body>

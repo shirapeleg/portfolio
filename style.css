@@ -1279,16 +1279,23 @@ body {
     height: auto;
   }
 
-  /* עמוד Block – במובייל בלבד: התמונה השנייה תופיע בשלמותה (בלי חיתוך) */
-  .work-page .work-page-gallery-block img:nth-child(2) {
+  /* עמוד Wildflowers – במובייל: אין חפיפה בין הווידאו הראשון לתמונה השנייה, כדי למנוע מצב שבו וידאו מנגן "מאחור" אבל נראית רק תמונה סטטית */
+  .work-page .work-page-gallery-wildflowers img:nth-child(2) {
     clip-path: none;
     margin-top: 0;
   }
 
-  /* עמוד Wildflowers – במובייל: חיתוך קטן יותר מהחלק העליון של התמונה השנייה (60px במקום 90px) */
-  .work-page .work-page-gallery img:nth-child(2) {
-    clip-path: inset(60px 0 0 0);
-    margin-top: -60px;
+  /* עמוד Princess – במובייל: התמונה השנייה ללא חיתוך בכלל */
+  .work-page .work-page-gallery-princess img:nth-child(2) {
+    clip-path: none;
+    margin-top: 0;
+  }
+
+  /* עמוד Block – במובייל בלבד: התמונה השנייה תופיע בשלמותה (בלי חיתוך)
+     ממוקם אחרי החיתוך הכללי כדי לוודא שלא ייחתך בכלל */
+  .work-page .work-page-gallery-block img:nth-child(2) {
+    clip-path: none;
+    margin-top: 0;
   }
 
   /* גלריה South – במובייל: flex בעמודה אחת כדי שסדר התמונות יהיה תמיד לפי DOM גם בטלפון אמיתי (column-count עלול ליצור סדר שונה בחלק מהדפדפנים) */
