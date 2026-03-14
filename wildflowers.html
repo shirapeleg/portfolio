@@ -61,5 +61,20 @@
     </svg>
   </a>
   <script src="scroll-to-top.js"></script>
+  <script>
+    (function() {
+      if (!window.matchMedia || !window.matchMedia('(max-width: 768px)').matches) return;
+      var video = document.querySelector('.work-page-gallery-wildflowers video');
+      if (!video) return;
+      function startOnInteraction() {
+        video.removeAttribute('poster');
+        if (video.paused) video.play().catch(function() {});
+        document.removeEventListener('touchstart', startOnInteraction, { passive: true });
+        document.removeEventListener('scroll', startOnInteraction, { passive: true });
+      }
+      document.addEventListener('touchstart', startOnInteraction, { passive: true });
+      document.addEventListener('scroll', startOnInteraction, { passive: true });
+    })();
+  </script>
 </body>
 </html>
