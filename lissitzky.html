@@ -8,6 +8,7 @@
   <link rel="preload" href="LISSITZKY/1.png" as="image" media="(min-width: 1101px)">
   <link rel="preload" href="LISSITZKY/2.png" as="image" media="(min-width: 1101px)">
   <link rel="preload" href="LISSITZKY/3.png" as="image" media="(min-width: 1101px)">
+  <script src="lazy-media.js"></script>
 </head>
 <body class="work-page">
   <nav class="top-nav" aria-label="ניווט ראשי">
@@ -40,16 +41,16 @@
         <div class="lissitzky-cell"><img src="LISSITZKY/3.png" alt="Lissitzky 3" fetchpriority="high"></div>
       </div>
       <div class="lissitzky-row">
-        <div class="lissitzky-cell"><img src="LISSITZKY/4.png" alt="Lissitzky 4"></div>
-        <div class="lissitzky-cell"><img src="LISSITZKY/5.png" alt="Lissitzky 5"></div>
+        <div class="lissitzky-cell"><img src="LISSITZKY/4.png" alt="Lissitzky 4" loading="lazy" decoding="async"></div>
+        <div class="lissitzky-cell"><img src="LISSITZKY/5.png" alt="Lissitzky 5" loading="lazy" decoding="async"></div>
       </div>
       <div class="lissitzky-row">
-        <div class="lissitzky-cell"><img src="LISSITZKY/6.png" alt="Lissitzky 6"></div>
-        <div class="lissitzky-cell"><img src="LISSITZKY/7.png" alt="Lissitzky 7"></div>
+        <div class="lissitzky-cell"><img src="LISSITZKY/6.png" alt="Lissitzky 6" loading="lazy" decoding="async"></div>
+        <div class="lissitzky-cell"><img src="LISSITZKY/7.png" alt="Lissitzky 7" loading="lazy" decoding="async"></div>
       </div>
       <div class="lissitzky-row">
-        <div class="lissitzky-cell"><img src="LISSITZKY/8.png" alt="Lissitzky 8"></div>
-        <div class="lissitzky-cell"><img src="LISSITZKY/9.png" alt="Lissitzky 9"></div>
+        <div class="lissitzky-cell"><img src="LISSITZKY/8.png" alt="Lissitzky 8" loading="lazy" decoding="async"></div>
+        <div class="lissitzky-cell"><img src="LISSITZKY/9.png" alt="Lissitzky 9" loading="lazy" decoding="async"></div>
       </div>
     </div>
   </main>
@@ -62,6 +63,5 @@
       <path d="M12 5L7 13h3v6h4v-6h3L12 5z" fill="currentColor"/>
     </svg>
   </a>
-  <script src="scroll-to-top.js"></script>
 </body>
 </html>

@@ -8,6 +8,7 @@
   <link rel="preload" href="street/1.mp4" as="video" media="(min-width: 1101px)">
   <link rel="preload" href="street/2.mp4" as="video" media="(min-width: 1101px)">
   <link rel="preload" href="street/3.mp4" as="video" media="(min-width: 1101px)">
+  <script src="lazy-media.js"></script>
 </head>
 <body class="work-page">
   <nav class="top-nav" aria-label="ניווט ראשי">
@@ -35,19 +36,19 @@
   <main>
     <div class="street-gallery">
       <div class="street-row">
-        <div class="street-cell"><video src="street/1.mp4" loop muted playsinline autoplay preload="auto"></video></div>
-        <div class="street-cell"><video src="street/2.mp4" loop muted playsinline autoplay preload="auto"></video></div>
-        <div class="street-cell"><video src="street/3.mp4" loop muted playsinline autoplay preload="auto"></video></div>
+        <div class="street-cell"><video src="street/1.mp4" loop muted playsinline autoplay preload="metadata"></video></div>
+        <div class="street-cell"><video src="street/2.mp4" loop muted playsinline autoplay preload="none"></video></div>
+        <div class="street-cell"><video src="street/3.mp4" loop muted playsinline autoplay preload="none"></video></div>
       </div>
       <div class="street-row">
-        <div class="street-cell"><video src="street/4.mp4" loop muted playsinline autoplay></video></div>
-        <div class="street-cell"><video src="street/5.mp4" loop muted playsinline autoplay></video></div>
-        <div class="street-cell"><video src="street/6.mp4" loop muted playsinline autoplay></video></div>
+        <div class="street-cell"><video src="street/4.mp4" loop muted playsinline autoplay preload="none"></video></div>
+        <div class="street-cell"><video src="street/5.mp4" loop muted playsinline autoplay preload="none"></video></div>
+        <div class="street-cell"><video src="street/6.mp4" loop muted playsinline autoplay preload="none"></video></div>
       </div>
       <div class="street-row">
-        <div class="street-cell"><video src="street/7.mp4" loop muted playsinline autoplay></video></div>
-        <div class="street-cell"><video src="street/8.mp4" loop muted playsinline autoplay></video></div>
-        <div class="street-cell"><video src="street/9.mp4" loop muted playsinline autoplay></video></div>
+        <div class="street-cell"><video src="street/7.mp4" loop muted playsinline autoplay preload="none"></video></div>
+        <div class="street-cell"><video src="street/8.mp4" loop muted playsinline autoplay preload="none"></video></div>
+        <div class="street-cell"><video src="street/9.mp4" loop muted playsinline autoplay preload="none"></video></div>
       </div>
     </div>
   </main>
@@ -60,6 +61,5 @@
       <path d="M12 5L7 13h3v6h4v-6h3L12 5z" fill="currentColor"/>
     </svg>
   </a>
-  <script src="scroll-to-top.js"></script>
 </body>
 </html>

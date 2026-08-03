@@ -8,6 +8,7 @@
   <link rel="preload" href="book covers/2.jpg" as="image" media="(min-width: 1101px)">
   <link rel="preload" href="book covers/1.jpg" as="image" media="(min-width: 1101px)">
   <link rel="preload" href="book covers/3.jpg" as="image" media="(min-width: 1101px)">
+  <script src="lazy-media.js"></script>
 </head>
 <body class="work-page">
   <nav class="top-nav" aria-label="ניווט ראשי">
@@ -37,10 +38,10 @@
       <img src="book covers/2.jpg" alt="Block – Book cover 2" fetchpriority="high" />
       <img src="book covers/1.jpg" alt="Block – Book cover 1" fetchpriority="high" />
       <img src="book covers/3.jpg" alt="Block – Book cover 3" fetchpriority="high" />
-      <img src="book covers/4.png" alt="Block – Book cover 4" />
-      <img src="book covers/5.png" alt="Block – Book cover 5" />
-      <img src="book covers/6.png" alt="Block – Book cover 6" />
-      <img src="book covers/7.png" alt="Block – Book cover 7" />
+      <img src="book covers/4.png" alt="Block – Book cover 4" loading="lazy" decoding="async" />
+      <img src="book covers/5.png" alt="Block – Book cover 5" loading="lazy" decoding="async" />
+      <img src="book covers/6.png" alt="Block – Book cover 6" loading="lazy" decoding="async" />
+      <img src="book covers/7.png" alt="Block – Book cover 7" loading="lazy" decoding="async" />
     </div>
   </main>
   <nav class="bottom-nav-mobile-wrap" aria-label="ניווט עבודות">
@@ -52,6 +53,5 @@
       <path d="M12 5L7 13h3v6h4v-6h3L12 5z" fill="currentColor"/>
     </svg>
   </a>
-  <script src="scroll-to-top.js"></script>
 </body>
 </html>

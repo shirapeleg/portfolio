@@ -8,6 +8,7 @@
   <link rel="preload" href="canaanism/1.mp4" as="video" media="(min-width: 1101px)">
   <link rel="preload" href="canaanism/2.mp4" as="video" media="(min-width: 1101px)">
   <link rel="preload" href="canaanism/3.mp4" as="video" media="(min-width: 1101px)">
+  <script src="lazy-media.js"></script>
 </head>
 <body class="work-page">
   <nav class="top-nav" aria-label="ניווט ראשי">
@@ -35,26 +36,26 @@
   <main>
     <div class="canaanism-gallery">
       <div class="canaanism-row">
-        <div class="canaanism-cell"><video src="canaanism/1.mp4" loop muted playsinline autoplay preload="auto"></video></div>
-        <div class="canaanism-cell"><video src="canaanism/2.mp4" loop muted playsinline autoplay preload="auto"></video></div>
+        <div class="canaanism-cell"><video src="canaanism/1.mp4" loop muted playsinline autoplay preload="metadata"></video></div>
+        <div class="canaanism-cell"><video src="canaanism/2.mp4" loop muted playsinline autoplay preload="none"></video></div>
       </div>
       <div class="canaanism-row">
-        <div class="canaanism-cell"><video src="canaanism/3.mp4" loop muted playsinline autoplay preload="auto"></video></div>
-        <div class="canaanism-cell"><video src="canaanism/4.mp4" loop muted playsinline autoplay></video></div>
-        <div class="canaanism-cell"><video src="canaanism/5.mp4" loop muted playsinline autoplay></video></div>
+        <div class="canaanism-cell"><video src="canaanism/3.mp4" loop muted playsinline autoplay preload="none"></video></div>
+        <div class="canaanism-cell"><video src="canaanism/4.mp4" loop muted playsinline autoplay preload="none"></video></div>
+        <div class="canaanism-cell"><video src="canaanism/5.mp4" loop muted playsinline autoplay preload="none"></video></div>
       </div>
       <div class="canaanism-row">
-        <div class="canaanism-cell"><img src="canaanism/6.png" alt="Canaanism 6" /></div>
-        <div class="canaanism-cell"><img src="canaanism/7.png" alt="Canaanism 7" /></div>
+        <div class="canaanism-cell"><img src="canaanism/6.png" alt="Canaanism 6" loading="lazy" decoding="async" /></div>
+        <div class="canaanism-cell"><img src="canaanism/7.png" alt="Canaanism 7" loading="lazy" decoding="async" /></div>
       </div>
       <div class="canaanism-row">
-        <div class="canaanism-cell"><img src="canaanism/9.png" alt="Canaanism 9" /></div>
-        <div class="canaanism-cell"><img src="canaanism/11.png" alt="Canaanism 11" /></div>
-        <div class="canaanism-cell"><img src="canaanism/12.png" alt="Canaanism 12" /></div>
-        <div class="canaanism-cell"><img src="canaanism/13.png" alt="Canaanism 13" /></div>
+        <div class="canaanism-cell"><img src="canaanism/9.png" alt="Canaanism 9" loading="lazy" decoding="async" /></div>
+        <div class="canaanism-cell"><img src="canaanism/11.png" alt="Canaanism 11" loading="lazy" decoding="async" /></div>
+        <div class="canaanism-cell"><img src="canaanism/12.png" alt="Canaanism 12" loading="lazy" decoding="async" /></div>
+        <div class="canaanism-cell"><img src="canaanism/13.png" alt="Canaanism 13" loading="lazy" decoding="async" /></div>
       </div>
       <div class="canaanism-row">
-        <div class="canaanism-cell"><video src="canaanism/8.mp4" loop muted playsinline autoplay></video></div>
+        <div class="canaanism-cell"><video src="canaanism/8.mp4" loop muted playsinline autoplay preload="none"></video></div>
       </div>
     </div>
   </main>
@@ -67,6 +68,5 @@
       <path d="M12 5L7 13h3v6h4v-6h3L12 5z" fill="currentColor"/>
     </svg>
   </a>
-  <script src="scroll-to-top.js"></script>
 </body>
 </html>
