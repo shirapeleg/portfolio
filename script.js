@@ -75,10 +75,37 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  /* כותרת "Shira Peleg" – פונט קבוע OTMiniature-Bold בלבד */
+  /* כותרת "Shira Peleg" – פונט קבוע DingDongIrregular בלבד */
   const titleEl = document.querySelector('.site-title-text');
   const titleMobileEl = document.querySelector('.site-title-text-mobile');
   const titleWrap = document.querySelector('.site-title-wrap');
+  const TITLE_WORD_GAP = '0.14em';
+
+  function titleToSvgHtml(text) {
+    var words = String(text).trim().split(/\s+/);
+    if (words.length < 2) return words[0] || '';
+    var html = '<tspan>' + words[0] + '</tspan>';
+    for (var i = 1; i < words.length; i++) {
+      html += '<tspan class="site-title-name-gap" dx="' + TITLE_WORD_GAP + '">' + words[i] + '</tspan>';
+    }
+    return html;
+  }
+
+  function titleToMobileHtml(text) {
+    var words = String(text).trim().split(/\s+/);
+    if (words.length < 2) return words[0] || '';
+    var html = words[0];
+    for (var i = 1; i < words.length; i++) {
+      html += '<span class="title-word-gap">' + words[i] + '</span>';
+    }
+    return html;
+  }
+
+  function setSiteTitle(text) {
+    if (titleEl) titleEl.innerHTML = titleToSvgHtml(text);
+    if (titleMobileEl) titleMobileEl.innerHTML = titleToMobileHtml(text);
+    applyTitleFontDingDong();
+  }
 
   function positionMobileTitle() {
     if (!titleWrap) return;
@@ -130,8 +157,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  function applyTitleFontOTMiniature() {
-    var fontName = 'OTMiniature';
+  function applyTitleFontDingDong() {
+    var fontName = 'DingDongIrregular';
     if (titleEl) {
       titleEl.style.fontFamily = "'" + fontName + "', Georgia, serif";
       titleEl.removeAttribute('transform');
@@ -146,9 +173,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function restoreTitle() {
     if (titleMobileEl) titleMobileEl.classList.remove('title-work-preview');
-    if (titleEl) titleEl.textContent = 'Shira Peleg';
+    if (titleEl) titleEl.innerHTML = titleToSvgHtml('Shira Peleg');
     if (titleMobileEl) titleMobileEl.innerHTML = 'Shira<br>Peleg';
-    applyTitleFontOTMiniature();
+    applyTitleFontDingDong();
   }
 
   if (titleEl || titleMobileEl) {
@@ -197,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }, true);
   }
 
-  /* Hover on WILDFLOWERS PROTECTION LAW: show "Broadsheet" in OTMiniature-Bold, same size */
+  /* Hover on WILDFLOWERS PROTECTION LAW: show "Broadsheet" in DingDongIrregular, same size */
   const wildflowersGroup = Array.from(document.querySelectorAll('.work-group')).find(function (a) {
     const span = a.querySelector('.work-item');
     return span && span.textContent.trim() === 'WILDFLOWERS PROTECTION LAW';
@@ -205,21 +232,17 @@ document.addEventListener('DOMContentLoaded', function () {
   if (wildflowersGroup && titleEl) {
     if (!isMobileForTitle) {
       wildflowersGroup.addEventListener('mouseenter', function () {
-        titleEl.textContent = 'Broadsheet';
-        if (titleMobileEl) titleMobileEl.innerHTML = 'Broadsheet';
-        applyTitleFontOTMiniature();
+        setSiteTitle('Broadsheet');
       });
       wildflowersGroup.addEventListener('mouseleave', restoreTitle);
     } else {
       setupMobileLongPress(wildflowersGroup, function () {
-        titleEl.textContent = 'Broadsheet';
-        if (titleMobileEl) titleMobileEl.innerHTML = 'Broadsheet';
-        applyTitleFontOTMiniature();
+        setSiteTitle('Broadsheet');
       });
     }
   }
 
-  /* Hover on STREET: show "Motion" in OTMiniature-Bold, same size */
+  /* Hover on STREET: show "Motion" in DingDongIrregular, same size */
   const streetGroup = Array.from(document.querySelectorAll('.work-group')).find(function (a) {
     const span = a.querySelector('.work-item');
     return span && span.textContent.trim() === 'STREET';
@@ -227,21 +250,17 @@ document.addEventListener('DOMContentLoaded', function () {
   if (streetGroup && titleEl) {
     if (!isMobileForTitle) {
       streetGroup.addEventListener('mouseenter', function () {
-        titleEl.textContent = 'Motion';
-        if (titleMobileEl) titleMobileEl.innerHTML = 'Motion';
-        applyTitleFontOTMiniature();
+        setSiteTitle('Motion');
       });
       streetGroup.addEventListener('mouseleave', restoreTitle);
     } else {
       setupMobileLongPress(streetGroup, function () {
-        titleEl.textContent = 'Motion';
-        if (titleMobileEl) titleMobileEl.innerHTML = 'Motion';
-        applyTitleFontOTMiniature();
+        setSiteTitle('Motion');
       });
     }
   }
 
-  /* Hover on BLOCK: show "Book Covers" in OTMiniature-Bold, same size */
+  /* Hover on BLOCK: show "Book Covers" in DingDongIrregular, same size */
   const blockGroup = Array.from(document.querySelectorAll('.work-group')).find(function (a) {
     const span = a.querySelector('.work-item');
     return span && span.textContent.trim() === 'BLOCK';
@@ -249,21 +268,17 @@ document.addEventListener('DOMContentLoaded', function () {
   if (blockGroup && titleEl) {
     if (!isMobileForTitle) {
       blockGroup.addEventListener('mouseenter', function () {
-        titleEl.textContent = 'Book Covers';
-        if (titleMobileEl) titleMobileEl.innerHTML = 'Book Covers';
-        applyTitleFontOTMiniature();
+        setSiteTitle('Book Covers');
       });
       blockGroup.addEventListener('mouseleave', restoreTitle);
     } else {
       setupMobileLongPress(blockGroup, function () {
-        titleEl.textContent = 'Book Covers';
-        if (titleMobileEl) titleMobileEl.innerHTML = 'Book Covers';
-        applyTitleFontOTMiniature();
+        setSiteTitle('Book Covers');
       });
     }
   }
 
-  /* Hover on THE PRINCESS WILL COME AT FOUR: show "Illustrated Book" in OTMiniature-Bold, same size */
+  /* Hover on THE PRINCESS WILL COME AT FOUR: show "Illustrated Book" in DingDongIrregular, same size */
   const princessGroup = Array.from(document.querySelectorAll('.work-group')).find(function (a) {
     const span = a.querySelector('.work-item');
     return span && span.textContent.trim() === 'THE PRINCESS WILL COME AT FOUR';
@@ -271,21 +286,17 @@ document.addEventListener('DOMContentLoaded', function () {
   if (princessGroup && titleEl) {
     if (!isMobileForTitle) {
       princessGroup.addEventListener('mouseenter', function () {
-        titleEl.textContent = 'Illustrated Book';
-        if (titleMobileEl) titleMobileEl.innerHTML = 'Illustrated Book';
-        applyTitleFontOTMiniature();
+        setSiteTitle('Illustrated Book');
       });
       princessGroup.addEventListener('mouseleave', restoreTitle);
     } else {
       setupMobileLongPress(princessGroup, function () {
-        titleEl.textContent = 'Illustrated Book';
-        if (titleMobileEl) titleMobileEl.innerHTML = 'Illustrated Book';
-        applyTitleFontOTMiniature();
+        setSiteTitle('Illustrated Book');
       });
     }
   }
 
-  /* Hover on CANAANISM: show "Motion Posters" in OTMiniature-Bold, same size */
+  /* Hover on CANAANISM: show "Motion Posters" in DingDongIrregular, same size */
   const canaanismGroup = Array.from(document.querySelectorAll('.work-group')).find(function (a) {
     const span = a.querySelector('.work-item');
     return span && span.textContent.trim() === 'CANAANISM';
@@ -293,21 +304,17 @@ document.addEventListener('DOMContentLoaded', function () {
   if (canaanismGroup && titleEl) {
     if (!isMobileForTitle) {
       canaanismGroup.addEventListener('mouseenter', function () {
-        titleEl.textContent = 'Motion Posters';
-        if (titleMobileEl) titleMobileEl.innerHTML = 'Motion Posters';
-        applyTitleFontOTMiniature();
+        setSiteTitle('Motion Posters');
       });
       canaanismGroup.addEventListener('mouseleave', restoreTitle);
     } else {
       setupMobileLongPress(canaanismGroup, function () {
-        titleEl.textContent = 'Motion Posters';
-        if (titleMobileEl) titleMobileEl.innerHTML = 'Motion Posters';
-        applyTitleFontOTMiniature();
+        setSiteTitle('Motion Posters');
       });
     }
   }
 
-  /* Hover on LUCID DREAMS: show "Website" in OTMiniature-Bold, same size */
+  /* Hover on LUCID DREAMS: show "Website" in DingDongIrregular, same size */
   const lucidDreamsGroup = Array.from(document.querySelectorAll('.work-group')).find(function (a) {
     const span = a.querySelector('.work-item');
     return span && span.textContent.trim() === 'LUCID DREAMS';
@@ -315,21 +322,17 @@ document.addEventListener('DOMContentLoaded', function () {
   if (lucidDreamsGroup && titleEl) {
     if (!isMobileForTitle) {
       lucidDreamsGroup.addEventListener('mouseenter', function () {
-        titleEl.textContent = 'Website';
-        if (titleMobileEl) titleMobileEl.innerHTML = 'Website';
-        applyTitleFontOTMiniature();
+        setSiteTitle('Website');
       });
       lucidDreamsGroup.addEventListener('mouseleave', restoreTitle);
     } else {
       setupMobileLongPress(lucidDreamsGroup, function () {
-        titleEl.textContent = 'Website';
-        if (titleMobileEl) titleMobileEl.innerHTML = 'Website';
-        applyTitleFontOTMiniature();
+        setSiteTitle('Website');
       });
     }
   }
 
-  /* Hover on SOUTH INTERNATIONAL FILM FESTIVAL: show "Branding" in OTMiniature-Bold, same size */
+  /* Hover on SOUTH INTERNATIONAL FILM FESTIVAL: show "Branding" in DingDongIrregular, same size */
   const southFestivalGroup = Array.from(document.querySelectorAll('.work-group')).find(function (a) {
     const span = a.querySelector('.work-item');
     return span && span.textContent.trim() === 'SOUTH INTERNATIONAL FILM FESTIVAL';
@@ -337,21 +340,17 @@ document.addEventListener('DOMContentLoaded', function () {
   if (southFestivalGroup && titleEl) {
     if (!isMobileForTitle) {
       southFestivalGroup.addEventListener('mouseenter', function () {
-        titleEl.textContent = 'Branding';
-        if (titleMobileEl) titleMobileEl.innerHTML = 'Branding';
-        applyTitleFontOTMiniature();
+        setSiteTitle('Branding');
       });
       southFestivalGroup.addEventListener('mouseleave', restoreTitle);
     } else {
       setupMobileLongPress(southFestivalGroup, function () {
-        titleEl.textContent = 'Branding';
-        if (titleMobileEl) titleMobileEl.innerHTML = 'Branding';
-        applyTitleFontOTMiniature();
+        setSiteTitle('Branding');
       });
     }
   }
 
-  /* Hover on LISSITZKY: show "Posters" in OTMiniature-Bold, same size */
+  /* Hover on LISSITZKY: show "Posters" in DingDongIrregular, same size */
   const lissitzkyGroup = Array.from(document.querySelectorAll('.work-group')).find(function (a) {
     const span = a.querySelector('.work-item');
     return span && span.textContent.trim() === 'LISSITZKY';
@@ -359,38 +358,30 @@ document.addEventListener('DOMContentLoaded', function () {
   if (lissitzkyGroup && titleEl) {
     if (!isMobileForTitle) {
       lissitzkyGroup.addEventListener('mouseenter', function () {
-        titleEl.textContent = 'Posters';
-        if (titleMobileEl) titleMobileEl.innerHTML = 'Posters';
-        applyTitleFontOTMiniature();
+        setSiteTitle('Posters');
       });
       lissitzkyGroup.addEventListener('mouseleave', restoreTitle);
     } else {
       setupMobileLongPress(lissitzkyGroup, function () {
-        titleEl.textContent = 'Posters';
-        if (titleMobileEl) titleMobileEl.innerHTML = 'Posters';
-        applyTitleFontOTMiniature();
+        setSiteTitle('Posters');
       });
     }
   }
 
-  /* Hover on DAILY: show "Illustrations" in OTMiniature-Bold, same size */
-  const dailyGroup = Array.from(document.querySelectorAll('.work-group')).find(function (a) {
+  /* Hover on I THINK HE'S LISTENING TO US: show "Book" in DingDongIrregular, same size */
+  const listeningGroup = Array.from(document.querySelectorAll('.work-group')).find(function (a) {
     const span = a.querySelector('.work-item');
-    return span && span.textContent.trim() === 'DAILY';
+    return span && span.textContent.trim() === "I THINK HE'S LISTENING TO US";
   });
-  if (dailyGroup && titleEl) {
+  if (listeningGroup && titleEl) {
     if (!isMobileForTitle) {
-      dailyGroup.addEventListener('mouseenter', function () {
-        titleEl.textContent = 'Illustrations';
-        if (titleMobileEl) titleMobileEl.innerHTML = 'Illustrations';
-        applyTitleFontOTMiniature();
+      listeningGroup.addEventListener('mouseenter', function () {
+        setSiteTitle('Book');
       });
-      dailyGroup.addEventListener('mouseleave', restoreTitle);
+      listeningGroup.addEventListener('mouseleave', restoreTitle);
     } else {
-      setupMobileLongPress(dailyGroup, function () {
-        titleEl.textContent = 'Illustrations';
-        if (titleMobileEl) titleMobileEl.innerHTML = 'Illustrations';
-        applyTitleFontOTMiniature();
+      setupMobileLongPress(listeningGroup, function () {
+        setSiteTitle('Book');
       });
     }
   }
@@ -479,10 +470,20 @@ document.addEventListener('DOMContentLoaded', function () {
     }, lastDisappearMs + fadeMs);
   }
 
-  /* Hover images: from folder "hover", named 1.jpg, 2.jpg, ... 69; start index random */
-  const HOVER_IMAGE_COUNT = 69;
+  /* Hover images: from folder "hover", named 1.png ... 86; 58–62 (ex-daily) and 77 skipped */
   const HOVER_IMAGE_EXT = 'png';
   const HOVER_BASE = 'hover/';
+  const ACTIVE_HOVER_IMAGES = [];
+  for (var hi = 1; hi <= 86; hi++) {
+    if (hi >= 58 && hi <= 62) continue;
+    if (hi === 77) continue;
+    ACTIVE_HOVER_IMAGES.push(hi);
+  }
+  const HOVER_IMAGE_COUNT = ACTIVE_HOVER_IMAGES.length;
+
+  function getHoverImageNum(startOffset, cellIndex) {
+    return ACTIVE_HOVER_IMAGES[(startOffset + cellIndex) % HOVER_IMAGE_COUNT];
+  }
 
   function aboutIntroTilesAreHidden() {
     // Measure against CSS by creating a temporary element off-screen.
@@ -505,7 +506,7 @@ document.addEventListener('DOMContentLoaded', function () {
     return hidden;
   }
 
-  /** מחזיר את עמוד העבודה לפי מספר תמונה (1–69) */
+  /** מחזיר את עמוד העבודה לפי מספר תמונה (1–86) */
   function getPageForImageNum(num) {
     if (num >= 1 && num <= 8) return 'block';
     if (num >= 9 && num <= 16) return 'wildflowers';
@@ -514,8 +515,8 @@ document.addEventListener('DOMContentLoaded', function () {
     if (num >= 35 && num <= 42) return 'lissitzky';
     if (num >= 43 && num <= 49) return 'canaanism';
     if (num >= 50 && num <= 57) return 'lucid-dreams';
-    if (num >= 58 && num <= 62) return 'daily';
     if (num >= 63 && num <= 69) return 'street';
+    if (num >= 70 && num <= 86) return 'i-think-hes-listening-to-us';
     return null;
   }
 
@@ -534,7 +535,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var stepMs = 18;
     var fadeMs = 250;
     var overlapCount = 34;
-    var startIndex = 1 + Math.floor(Math.random() * HOVER_IMAGE_COUNT);
+    var startOffset = Math.floor(Math.random() * HOVER_IMAGE_COUNT);
 
     overlay.innerHTML = '';
     var cellsContainer = document.createElement('div');
@@ -542,7 +543,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var cellIndex = 0;
     for (var r = 0; r < rows; r++) {
       for (var c = 0; c < cols; c++) {
-        var imageNum = ((startIndex - 1 + cellIndex) % HOVER_IMAGE_COUNT) + 1;
+        var imageNum = getHoverImageNum(startOffset, cellIndex);
         var cell = document.createElement('div');
         cell.className = 'about-intro-overlay-cell';
         cell.style.left = (c * cellWidth) + 'px';
@@ -626,7 +627,7 @@ document.addEventListener('DOMContentLoaded', function () {
      * לכן בדילוג על בניית התאים אנחנו חוסכים עבודה/בקשות בלי לשנות מראה או אינטראקציה.
      */
     if (!isMobile) {
-      const startIndex = 1 + Math.floor(Math.random() * HOVER_IMAGE_COUNT);
+      const startOffset = Math.floor(Math.random() * HOVER_IMAGE_COUNT);
       const cellsContainer = document.createElement('div');
       cellsContainer.className = 'grid-cells';
       cellsContainer.setAttribute('aria-hidden', 'true');
@@ -634,7 +635,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
-          const imageNum = ((startIndex - 1 + cellIndex) % HOVER_IMAGE_COUNT) + 1;
+          const imageNum = getHoverImageNum(startOffset, cellIndex);
           const cell = document.createElement('div');
           cell.className = 'grid-cell';
           cell.dataset.imageNum = String(imageNum);

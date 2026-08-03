@@ -19,10 +19,10 @@
   font-style: normal;
 }
 
-/* OTMiniature – כותרת האתר (Shira Peleg ועבודות) */
+/* DingDongIrregular – כותרת האתר (Shira Peleg ועבודות) */
 @font-face {
-  font-family: 'OTMiniature';
-  src: url('shira peleg/new fonts/OTMiniature-Bold.otf') format('opentype');
+  font-family: 'DingDongIrregular';
+  src: url('DingDongIrregular.otf') format('opentype');
 }
 @font-face {
   font-family: 'Heebo';
@@ -439,6 +439,40 @@ body {
   margin-top: -10px;
 }
 
+/* Listening page: crop video 1 – 2.5cm top, 4cm bottom (of 19.5cm book page) */
+.work-page-gallery-listening video:first-child {
+  clip-path: inset(calc(100% * 2.5 / 19.5) 0 calc(100% * 4 / 19.5) 0);
+  margin-top: calc(-100% * 2.5 / 19.5);
+  margin-bottom: calc(-100% * 4 / 19.5);
+}
+
+.work-page-gallery-listening img:nth-child(2) {
+  clip-path: none;
+  margin-top: 0;
+}
+
+/* Listening: images 3+ – black background, thin white dividers */
+.listening-gallery-dark {
+  display: flex;
+  flex-direction: column;
+  gap: var(--frame-line-width);
+  width: 100%;
+  background: #fff;
+}
+
+.listening-gallery-dark img {
+  display: block;
+  width: 100%;
+  height: auto;
+  box-sizing: border-box;
+  padding: clamp(18px, 2.8vw, 36px);
+  background: #000;
+  object-fit: contain;
+  object-position: center center;
+  clip-path: none;
+  margin-top: 0;
+}
+
 /* Street page: grid of 9 videos in 3 rows of 3, loop */
 .street-gallery {
   display: flex;
@@ -601,7 +635,7 @@ body {
   pointer-events: none;
 }
 
-/* Work page: hover title in left rectangle (replaces main "Shira Peleg" title), OTMiniature bold serif – selectable */
+/* Work page: hover title in left rectangle (replaces main "Shira Peleg" title), DingDongIrregular – selectable */
 .work-page-hover-title {
   position: absolute;
   top: 124px;
@@ -609,10 +643,10 @@ body {
   width: 25%;
   padding: 16px 12px 0;
   box-sizing: border-box;
-  font-family: 'OTMiniature', Georgia, serif;
+  font-family: 'DingDongIrregular', Georgia, serif;
   font-weight: 700;
-  /* גודל מקורי בדסקטופ */
-  font-size: clamp(36px, 5.5vw, 48px);
+  /* גודל מוגדל בדסקטופ */
+  font-size: clamp(64px, 9.2vw, 82px);
   line-height: 1.1;
   color: black;
   z-index: 6;
@@ -620,10 +654,22 @@ body {
   overflow: hidden;
 }
 
-/* Title in upper part of left rectangle (e.g. wildflowers), same font as nav – below Broadsheet, selectable */
+/* Princess: "Illustrated Book" – שורה אחת בלבד */
+.work-page-princess .work-page-hover-title {
+  white-space: nowrap;
+  overflow: visible;
+  font-size: clamp(52px, 7.3vw, 68px);
+  letter-spacing: -0.02em;
+}
+
+.work-page-princess .work-page-left-nav-title {
+  top: 210px;
+}
+
+/* Title in upper part of left rectangle (e.g. wildflowers), same font as nav – below hover title, selectable */
 .work-page-left-nav-title {
   position: absolute;
-  top: 201px;
+  top: 222px;
   left: 0;
   width: 25%;
   padding: 0 12px;
@@ -636,11 +682,6 @@ body {
   z-index: 6;
   pointer-events: auto;
   margin: 0;
-}
-
-/* Princess page: title 30px lower */
-.work-page-left-nav-title.work-page-left-nav-title-30-lower {
-  top: 259px;
 }
 
 /* Paragraph and specs at bottom of left rectangle (e.g. wildflowers) – pointer-events: auto so text is selectable */
@@ -710,18 +751,23 @@ body {
 
 /* דסקטופ: רווח אותיות מוגדל במעט בכותרת ובמילים שמחליפות אותה בהובר */
 .site-title-text {
-  font-size: clamp(80px, 17.5vw, 155px);
+  font-size: clamp(74px, 16.5vw, 142px);
   font-size-adjust: 0.48;
   font-weight: 700;
   fill: black;
   letter-spacing: 0.03em;
-  font-family: 'OTMiniature', Georgia, serif;
+  font-family: 'DingDongIrregular', Georgia, serif;
 }
 
-/* טקסט כותרת חלופי למובייל (שתי שורות) – מוסתר בדסקטופ, בפונט OTMiniature */
+/* רווח אחיד בין מילים בכותרות דו-מיליות */
+.title-word-gap {
+  margin-left: 0.14em;
+}
+
+/* טקסט כותרת חלופי למובייל (שתי שורות) – מוסתר בדסקטופ, בפונט DingDongIrregular */
 .site-title-text-mobile {
   display: none;
-  font-family: 'OTMiniature', Georgia, serif;
+  font-family: 'DingDongIrregular', Georgia, serif;
   font-weight: 700;
   letter-spacing: -0.02em;
 }
@@ -744,8 +790,13 @@ body {
 
 .about-paragraph-wrap.is-contact {
   left: 50%;
-  top: 95px;   /* 45px + 50px lower */
-  height: 120px; /* 215px - 95px */
+  top: 45px;
+  height: 170px; /* 215px - 45px – full white band below nav */
+}
+
+.about-paragraph-wrap.is-contact.is-visible {
+  display: flex;
+  align-items: center;
 }
 
 .about-paragraph-wrap.is-visible {
@@ -866,11 +917,12 @@ body {
   flex: 2;
 }
 
+.works-rect-1 .work-group:nth-child(4),
 .works-rect-1 .work-group:last-child {
   flex: 2;
 }
 
-.works-rect-2 .work-group:nth-child(3) {
+.works-rect-2 .work-group:first-child {
   flex: 2;
 }
 
@@ -1094,18 +1146,25 @@ body {
     visibility: hidden;
   }
   body.contact-open-mobile .about-paragraph-wrap {
-    position: relative;
-    height: 0;
-    min-height: 0;
+    position: absolute;
+    top: calc(var(--mobile-band-top) - 85px);
+    left: 0;
+    right: 0;
+    height: 160px;
+    min-height: 160px;
     margin: 0;
-    padding: 0;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
     overflow: visible;
+    z-index: 10;
   }
   body.contact-open-mobile .about-paragraph-wrap .contact-paragraph-text {
-    position: absolute;
-    top: 8px;
-    left: 12px;
-    right: 12px;
+    position: static;
+    top: auto;
+    left: auto;
+    right: auto;
+    transform: none;
     z-index: 10;
     font-size: calc(0.875rem + 11px); /* קטן ב-4px מהטקסט הרגיל במובייל (15px → 11px) */
   }
@@ -1170,11 +1229,11 @@ body {
   .works-rect-1 .work-group:nth-child(2) { grid-row: 5; }
   .works-rect-1 .work-group:nth-child(3) { grid-row: 6; }
   .works-rect-1 .work-group:nth-child(4) { grid-row: 7; }
-  .works-rect-2 .work-group:nth-child(1) { grid-row: 8; }
-  .works-rect-2 .work-group:nth-child(2) { grid-row: 9; }
-  .works-rect-2 .work-group:nth-child(3) { grid-row: 10; }
-  .works-rect-2 .work-group:nth-child(4) { grid-row: 11; }
-  .works-rect-2 .work-group:nth-child(5) { grid-row: 12; }
+  .works-rect-1 .work-group:nth-child(5) { grid-row: 8; }
+  .works-rect-2 .work-group:nth-child(1) { grid-row: 9; }
+  .works-rect-2 .work-group:nth-child(2) { grid-row: 10; }
+  .works-rect-2 .work-group:nth-child(3) { grid-row: 11; }
+  .works-rect-2 .work-group:nth-child(4) { grid-row: 12; }
 
   .work-group {
     border-top: 1px solid black;
@@ -1309,6 +1368,17 @@ body {
     margin-top: 0;
   }
 
+  /* עמוד Listening – במובייל: חיתוך 5 ס"מ (מתוך 19.5 ס"מ גובה עמוד) מלמעלה ומלמטה בסרטון 1 */
+  .work-page .work-page-gallery-listening video:first-child {
+    clip-path: inset(calc(100% * 2.5 / 19.5) 0 calc(100% * 4 / 19.5) 0);
+    margin-top: calc(-100% * 2.5 / 19.5);
+    margin-bottom: calc(-100% * 4 / 19.5);
+  }
+  .work-page .work-page-gallery-listening img:nth-child(2) {
+    clip-path: none;
+    margin-top: 0;
+  }
+
   /* גלריה South – במובייל: flex בעמודה אחת כדי שסדר התמונות יהיה תמיד לפי DOM גם בטלפון אמיתי (column-count עלול ליצור סדר שונה בחלק מהדפדפנים) */
   .work-page .work-page-gallery-2col .work-page-gallery-rest {
     column-count: 1;
@@ -1346,9 +1416,9 @@ body {
     width: 100%;
     padding: 16px 12px 0;
     box-sizing: border-box;
-    font-family: 'OTMiniature', Georgia, serif;
+    font-family: 'DingDongIrregular', Georgia, serif;
     font-weight: 700;
-    font-size: 2.1rem;
+    font-size: 3.75rem;
     line-height: 1.1;
     margin: 20px 0 0; /* 30px → 20px: הזזת גוש הטקסט העליון 10px למעלה */
     color: black;
@@ -1356,14 +1426,20 @@ body {
     z-index: 5;
   }
 
+  .work-page-princess .work-page-hover-title {
+    white-space: nowrap;
+    font-size: clamp(2.7rem, 11.5vw, 3.85rem);
+    letter-spacing: -0.02em;
+  }
+
   .work-page .work-page-left-nav-title {
     display: block !important;
     visibility: visible !important;
     position: static;
     width: 100%;
-    padding: 8px 12px 0;
+    padding: 0 12px 0;
     box-sizing: border-box;
-    margin: 0;
+    margin: -6px 0 0;
     color: black;
     opacity: 1;
   }
