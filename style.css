@@ -855,10 +855,18 @@ body {
 .grid-cell-img {
   position: absolute;
   inset: 0;
+  width: 100%;
+  height: 100%;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   opacity: 0;
+}
+
+@media (min-width: 1101px) {
+  .bottom-rectangle-grid.work-scatter-active .grid-cell-img.is-visible {
+    background-size: 100% 100%;
+  }
 }
 
 .grid-cell:hover .grid-cell-img,
@@ -1042,10 +1050,11 @@ body {
     font-size: 0.75rem;
   }
 
-  /* קווי גריד בלתי נראים לכותרת: 160px בין הקווים, ממורכזים בין קו תחתון ניווט (51px) לתחילת שורות העבודות */
+  /* מלבן הכותרת: בין קו תחתון הניווט לתחילת שמות העבודות */
   :root {
     --mobile-nav-bottom: 51px;
     --mobile-works-start: 342px;
+    --mobile-title-band-height: calc(var(--mobile-works-start) - var(--mobile-nav-bottom));
     --mobile-band-center: calc((var(--mobile-nav-bottom) + var(--mobile-works-start)) / 2);
     --mobile-band-top: calc(var(--mobile-band-center) - 80px);
   }
@@ -1054,18 +1063,27 @@ body {
     display: none;
   }
 
-  /* 3. כותרת "Shira Peleg" – הוזזה 60px למעלה */
+  /* 3. כותרת "Shira Peleg" – מתפרסת בתוך המלבן הלבן מעל שמות העבודות */
   .site-title-wrap {
-    left: 50%;
-    transform: translateX(-50%);
-    width: min(90vw, 600px);
-    top: calc(var(--mobile-band-top) - 60px);
-    min-height: 160px;
-    height: auto;
+    left: 0;
+    right: 0;
+    width: 100%;
+    top: calc(var(--mobile-nav-bottom) - 50px);
+    height: var(--mobile-title-band-height);
+    min-height: 0;
+    transform: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: visible;
+    overflow: hidden;
+  }
+
+  .site-title {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   /* במובייל משתמשים בגרסת הטקסט הדו-שורתית במקום ה-SVG */
@@ -1073,12 +1091,14 @@ body {
     display: none;
   }
 
-  /* כותרת גדולה וממורכזת כמו בצילום – גודל רספונסיבי, רווח צמוד בין Shira ל-Peleg */
+  /* כותרת – גודל מחושב ב-JS כדי למלא את המלבן; fallback CSS לפני טעינה */
   .site-title-text-mobile {
     display: block;
-    font-size: clamp(72px, 22vw, 100px);
-    line-height: 88px;
-    min-height: 160px;
+    font-size: min(calc(var(--mobile-title-band-height) / 1.24), 22vw);
+    line-height: 0.62;
+    min-height: 0;
+    max-width: 100%;
+    max-height: 100%;
     text-align: center;
     box-sizing: border-box;
     letter-spacing: 0.05em;
@@ -1147,11 +1167,11 @@ body {
   }
   body.contact-open-mobile .about-paragraph-wrap {
     position: absolute;
-    top: calc(var(--mobile-band-top) - 85px);
+    top: var(--mobile-nav-bottom);
     left: 0;
     right: 0;
-    height: 160px;
-    min-height: 160px;
+    height: var(--mobile-title-band-height);
+    min-height: 0;
     margin: 0;
     padding: 0 12px;
     display: flex;

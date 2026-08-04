@@ -107,12 +107,39 @@ document.addEventListener('DOMContentLoaded', function () {
     applyTitleFontDingDong();
   }
 
+  function fitMobileTitle() {
+    if (!titleMobileEl || !titleWrap) return;
+    var mq = window.matchMedia && window.matchMedia('(max-width: 1100px)');
+    if (!mq || !mq.matches) return;
+    if (titleMobileEl.classList.contains('title-work-preview')) return;
+
+    titleMobileEl.style.fontSize = '';
+    var bandH = titleWrap.clientHeight;
+    var bandW = titleWrap.clientWidth;
+    if (bandH <= 0 || bandW <= 0) return;
+
+    var lineHeightRatio = 0.62;
+    var fontSize = bandH / (lineHeightRatio * 2);
+    titleMobileEl.style.fontSize = fontSize + 'px';
+
+    for (var i = 0; i < 60; i++) {
+      if (titleMobileEl.scrollWidth <= bandW && titleMobileEl.scrollHeight <= bandH) break;
+      fontSize *= 0.96;
+      titleMobileEl.style.fontSize = fontSize + 'px';
+    }
+  }
+
   function positionMobileTitle() {
     if (!titleWrap) return;
     const mq = window.matchMedia && window.matchMedia('(max-width: 1100px)');
     if (!mq || !mq.matches) {
       /* דסקטופ – רק משחזרים מיקום כותרת, לא נוגעים ב-aboutWrap */
       titleWrap.style.top = '45px';
+      titleWrap.style.height = '';
+      titleWrap.style.left = '';
+      titleWrap.style.width = '';
+      titleWrap.style.transform = '';
+      if (titleMobileEl) titleMobileEl.style.fontSize = '';
       if (aboutWrap) {
         aboutWrap.style.position = '';
         aboutWrap.style.left = '';
@@ -125,13 +152,25 @@ document.addEventListener('DOMContentLoaded', function () {
       }
       return;
     }
-    const nav = document.querySelector('.top-nav');
-    const firstWorkRow = document.querySelector('.works-rect-1') || document.querySelector('.works-rect');
-    if (!nav || !firstWorkRow) return;
+    const topLine = document.querySelector('.top-line');
+    const firstWorkRow = document.querySelector('.works-rect-1 .work-group') || document.querySelector('.works-rect-1') || document.querySelector('.work-group');
+    if (!firstWorkRow) return;
 
-    /* מיקום הכותרת נקבע ב-CSS לפי קווי הגריד (--mobile-band-top, גובה 160px) – לא לדרוס */
+    var navBottom = topLine
+      ? topLine.getBoundingClientRect().bottom
+      : 52;
+    var worksTop = firstWorkRow.getBoundingClientRect().top;
+    if (worksTop <= navBottom) return;
+
+    document.documentElement.style.setProperty('--mobile-nav-bottom', navBottom + 'px');
+    document.documentElement.style.setProperty('--mobile-works-start', worksTop + 'px');
+
+    /* מיקום וגובה המלבן נקבעים ב-CSS לפי המשתנים – לא לדרוס */
     titleWrap.style.top = '';
     titleWrap.style.height = '';
+    titleWrap.style.left = '';
+    titleWrap.style.width = '';
+    titleWrap.style.transform = '';
 
     /* מובייל: כש-ABOUT פתוח – הפסקה מתחילה מיד מתחת לשורת הניווט העליונה */
     if (aboutWrap) {
@@ -155,6 +194,7 @@ document.addEventListener('DOMContentLoaded', function () {
         aboutWrap.style.padding = '';
       }
     }
+    fitMobileTitle();
   }
 
   function applyTitleFontDingDong() {
@@ -166,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (titleMobileEl) {
       titleMobileEl.style.fontFamily = "'" + fontName + "', Georgia, serif";
       titleMobileEl.style.fontSize = ''; /* גודל מ-CSS (clamp) כדי שהכותרת תהיה גדולה וממורכזת */
-      titleMobileEl.style.lineHeight = '88px';
+      titleMobileEl.style.lineHeight = ''; /* line-height מ-CSS */
       titleMobileEl.style.transform = '';
     }
   }
@@ -176,6 +216,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (titleEl) titleEl.innerHTML = titleToSvgHtml('Shira Peleg');
     if (titleMobileEl) titleMobileEl.innerHTML = 'Shira<br>Peleg';
     applyTitleFontDingDong();
+    fitMobileTitle();
   }
 
   if (titleEl || titleMobileEl) {
@@ -185,6 +226,11 @@ document.addEventListener('DOMContentLoaded', function () {
   // מיקום מדויק של הכותרת במובייל – בדיוק באמצע בין הניווט לשורת העבודה הראשונה
   positionMobileTitle();
   window.addEventListener('resize', positionMobileTitle);
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function () {
+      fitMobileTitle();
+    });
+  }
 
   /* דסקטופ: hover על עבודה מחליף כותרת. מובייל: החלפת כותרת רק ב-long press */
   const isMobileForTitle = window.matchMedia && window.matchMedia('(max-width: 1100px)').matches;
@@ -520,6 +566,90 @@ document.addEventListener('DOMContentLoaded', function () {
     return null;
   }
 
+  function getPageFromWorkHref(href) {
+    if (!href) return null;
+    var file = href.split('/').pop() || '';
+    return file.replace(/\.html(\?.*)?(#.*)?$/, '') || null;
+  }
+
+  function getImageNumsForPage(page) {
+    return ACTIVE_HOVER_IMAGES.filter(function (num) {
+      return getPageForImageNum(num) === page;
+    });
+  }
+
+  function shuffleArray(arr) {
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = arr[i];
+      arr[i] = arr[j];
+      arr[j] = tmp;
+    }
+    return arr;
+  }
+
+  var workScatterState = {
+    affectedCells: []
+  };
+
+  function clearWorkScatter() {
+    workScatterState.affectedCells.forEach(function (entry) {
+      entry.img.style.backgroundImage = entry.originalBg;
+      entry.img.classList.remove('is-visible');
+    });
+    workScatterState.affectedCells = [];
+    gridEl.classList.remove('work-scatter-active');
+  }
+
+  function pickRandomCellIndices(count, totalCells) {
+    var indices = [];
+    for (var i = 0; i < totalCells; i++) indices.push(i);
+    shuffleArray(indices);
+    return indices.slice(0, Math.min(count, totalCells));
+  }
+
+  function showWorkScatter(page) {
+    if (!window.matchMedia || !window.matchMedia('(min-width: 1101px)').matches) return;
+    if (gridEl.classList.contains('intro-animation')) return;
+
+    var imageNums = getImageNumsForPage(page);
+    if (!imageNums.length) return;
+
+    var cells = gridEl.querySelectorAll('.grid-cell');
+    if (!cells.length) return;
+
+    clearWorkScatter();
+    gridEl.classList.add('work-scatter-active');
+
+    shuffleArray(imageNums);
+    var cellIndices = pickRandomCellIndices(imageNums.length, cells.length);
+
+    cellIndices.forEach(function (cellIndex, i) {
+      var cell = cells[cellIndex];
+      var img = cell && cell.querySelector('.grid-cell-img');
+      if (!img) return;
+
+      var imageNum = imageNums[i];
+      workScatterState.affectedCells.push({
+        img: img,
+        originalBg: img.style.backgroundImage
+      });
+      img.style.backgroundImage = "url('" + HOVER_BASE + imageNum + '.' + HOVER_IMAGE_EXT + "')";
+      img.classList.add('is-visible');
+    });
+  }
+
+  function setupWorkScatterHover() {
+    document.querySelectorAll('.work-group').forEach(function (group) {
+      var page = getPageFromWorkHref(group.getAttribute('href'));
+      if (!page) return;
+      group.addEventListener('mouseenter', function () {
+        showWorkScatter(page);
+      });
+      group.addEventListener('mouseleave', clearWorkScatter);
+    });
+  }
+
   /* מובייל: אנימציית פתיחת העמוד – אותה נקודת התחלה כמו about (מקצה עליון), עם תמונות hover */
   function runOpeningOverlayIntro() {
     var overlay = document.getElementById('about-intro-overlay');
@@ -580,10 +710,9 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function layoutGrid() {
-    const topOffset = isMobile ? 0 : 305;
-    const width = document.body.offsetWidth;
-    const totalHeight = isMobile ? window.innerHeight : document.body.offsetHeight;
-    const height = totalHeight - topOffset;
+    clearWorkScatter();
+    const width = gridEl.clientWidth;
+    const height = gridEl.clientHeight;
     if (height <= 0 || width <= 0) return;
 
     /* חלוקה למלבנים שווים: N עמודות, M שורות – כל תא באותו גודל */
@@ -594,6 +723,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const gridWidth = width;
     const gridHeight = height;
+
+    gridEl.dataset.gridCols = String(cols);
+    gridEl.dataset.gridRows = String(rows);
 
     const verticalLines = [];
     for (let c = 1; c < cols; c++) {
@@ -635,14 +767,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
+          const left = c * cellWidth;
+          const top = r * cellHeight;
+          const w = c === cols - 1 ? gridWidth - left : cellWidth;
+          const h = r === rows - 1 ? gridHeight - top : cellHeight;
           const imageNum = getHoverImageNum(startOffset, cellIndex);
           const cell = document.createElement('div');
           cell.className = 'grid-cell';
           cell.dataset.imageNum = String(imageNum);
-          cell.style.left = (c * cellWidth) + 'px';
-          cell.style.top = (r * cellHeight) + 'px';
-          cell.style.width = cellWidth + 'px';
-          cell.style.height = cellHeight + 'px';
+          cell.dataset.gridCol = String(c);
+          cell.dataset.gridRow = String(r);
+          cell.style.left = left + 'px';
+          cell.style.top = top + 'px';
+          cell.style.width = w + 'px';
+          cell.style.height = h + 'px';
 
           const bg = document.createElement('div');
           bg.className = 'grid-cell-img';
@@ -699,7 +837,12 @@ document.addEventListener('DOMContentLoaded', function () {
       aboutIntroRan = true;
       setTimeout(runAboutIntroOverlay, 80);
     }
+    if (isMobile && typeof positionMobileTitle === 'function') {
+      positionMobileTitle();
+    }
   }
+
+  setupWorkScatterHover();
 
   /* כשנכנסים עם #about או #contact (חזרה מעמוד עבודה) – לבנות גריד ולפתוח את הפאנל; אחרת רק לבנות גריד */
   if (window.location.hash === '#about' || window.location.hash === '#contact') {
@@ -713,5 +856,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!gridEl.querySelector('.grid-cells') || !gridEl.querySelectorAll('.grid-cell').length) {
       layoutGrid();
     }
+    positionMobileTitle();
   });
 });
