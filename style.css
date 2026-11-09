@@ -10,6 +10,10 @@
 :root {
   --frame-line-width: 1px;
   --work-page-separator-gap: var(--frame-line-width);
+  /* רווח אנכי בין קו אופקי למשפט/כותרת בעמודת שמאל בעמודי עבודה (למעלה ולמטה) */
+  --work-page-left-edge-gap: 34px;
+  --title-marker-color: transparent;
+  --title-marker-text-color: #000;
 }
 
 @font-face {
@@ -19,15 +23,54 @@
   font-style: normal;
 }
 
-/* DingDongIrregular – כותרת האתר (Shira Peleg ועבודות) */
+/* MiriamLibre-heebo – כותרת האתר (Shira Peleg ועבודות) – מתיקיית static */
 @font-face {
-  font-family: 'DingDongIrregular';
-  src: url('DingDongIrregular.otf') format('opentype');
+  font-family: 'MiriamLibre-heebo';
+  src: url('static/MiriamLibre-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'MiriamLibre-heebo';
+  src: url('static/MiriamLibre-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* כותרות MiriamLibre – אותיות גדולות בלבד */
+.site-title-text,
+.site-title-text-mobile {
+  text-transform: uppercase;
+}
+
+@font-face {
+  font-family: 'Heebo';
+  src: url('fonts/otf/heebo/Heebo-ExtraLight.ttf') format('truetype');
+  font-weight: 200;
+  font-style: normal;
 }
 @font-face {
   font-family: 'Heebo';
-  src: url('fonts/Heebo-Light.ttf') format('truetype');
+  src: url('fonts/otf/heebo/Heebo-Light.ttf') format('truetype');
   font-weight: 300;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Heebo';
+  src: url('fonts/otf/heebo/Heebo-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Heebo';
+  src: url('fonts/otf/heebo/Heebo-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Heebo';
+  src: url('fonts/otf/heebo/Heebo-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
   font-style: normal;
 }
 
@@ -82,6 +125,14 @@ body {
 .top-nav .nav-link:hover {
   background: black;
   color: white;
+}
+
+/* דסקטופ: כש-ABOUT פתוח – בלי אפקט hover על פריטי ניווט שאינם פעילים */
+@media (min-width: 1101px) {
+  body.about-open-desktop .top-nav .nav-link:not(.active):hover {
+    background: transparent;
+    color: black;
+  }
 }
 
 /* קווי גריד למובייל – מוסתרים בדסקטופ, מופעלים רק במובייל בעמוד הפתיחה */
@@ -508,7 +559,7 @@ body {
   display: block;
 }
 
-/* Canaanism page: rows 1+2, 3+4+5, 6+7, 8 – videos loop */
+/* Canaanism page: דסקטופ – 1–5 בשורה אחת; מובייל – 1+2 / 3+4+5; שאר השורות לפי HTML */
 .canaanism-gallery {
   display: flex;
   flex-direction: column;
@@ -544,8 +595,8 @@ body {
   display: block;
 }
 
-/* Lissitzky page: grid of 9 images in 3 rows of 3 */
-.lissitzky-gallery {
+/* South Film Festival: שתי תמונות בשורה; 7 לבד ברוחב מלא */
+.south-gallery {
   display: flex;
   flex-direction: column;
   gap: var(--work-page-separator-gap);
@@ -555,28 +606,73 @@ body {
   background: #fff;
 }
 
-.lissitzky-row {
+.south-row:not(.south-row-full) {
   display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: stretch;
   gap: var(--work-page-separator-gap);
-  flex: 1;
-  min-height: 0;
+  width: 100%;
+  aspect-ratio: calc(var(--south-ar1, 1) + var(--south-ar2, 1));
 }
 
-.lissitzky-cell {
-  flex: 1;
+.south-row:not(.south-row-full) .south-cell:nth-child(1) {
+  flex: var(--south-ar1, 1) 1 0;
+}
+
+.south-row:not(.south-row-full) .south-cell:nth-child(2) {
+  flex: var(--south-ar2, 1) 1 0;
+}
+
+.south-row-full {
+  display: block;
+  width: 100%;
+  aspect-ratio: var(--south-ar1, auto);
+}
+
+.south-cell {
   min-width: 0;
   min-height: 0;
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  line-height: 0;
 }
 
-.lissitzky-cell img {
+.south-row:not(.south-row-full) .south-cell img,
+.south-row:not(.south-row-full) .south-cell video {
   width: 100%;
   height: 100%;
-  object-fit: contain;
   display: block;
+  object-fit: contain;
+  object-position: center;
+}
+
+.south-row-full .south-cell img,
+.south-row-full .south-cell video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  object-position: center;
+}
+
+.south-row-full:not([style*="--south-ar1"]) .south-cell img,
+.south-row-full:not([style*="--south-ar1"]) .south-cell video {
+  height: auto;
+}
+
+/* דסקטופ: פוסטרים 1–5 בשורה אחת */
+@media (min-width: 1101px) {
+  .canaanism-row.canaanism-row-motion-posters {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    flex: 1;
+    min-height: 0;
+  }
+  .canaanism-row-motion-posters .canaanism-cell {
+    flex: 1 1 0;
+    min-width: 0;
+  }
 }
 
 /* Daily page: 1 / 2 / 3 / 2 / 3×3… rows */
@@ -635,41 +731,74 @@ body {
   pointer-events: none;
 }
 
-/* Work page: hover title in left rectangle (replaces main "Shira Peleg" title), DingDongIrregular – selectable */
+/* Work page: Miriam category title – מוסתר (לא מוצג) */
 .work-page-hover-title {
+  display: none !important;
   position: absolute;
-  top: 124px;
-  left: 0;
-  width: 25%;
-  padding: 16px 12px 0;
+  /* דסקטופ: ממורכז אנכית בין nav-line-second (90px) ל-work-page-left-nav-title (173px) */
+  top: 90px;
+  height: calc(173px - 90px);
+  display: flex;
+  align-items: center;
+  transform: translateY(15px);
+  left: 12px;
+  width: fit-content;
+  max-width: calc(25% - 12px);
+  padding: 0;
   box-sizing: border-box;
-  font-family: 'DingDongIrregular', Georgia, serif;
+  font-family: 'MiriamLibre-heebo', sans-serif;
   font-weight: 700;
-  /* גודל מוגדל בדסקטופ */
-  font-size: clamp(64px, 9.2vw, 82px);
-  line-height: 1.1;
-  color: black;
+  --title-marker-ls: 0em;
+  font-size: clamp(50px, 7.2vw, 64px);
+  line-height: 0;
+  background: transparent;
   z-index: 6;
   pointer-events: auto;
-  overflow: hidden;
+  overflow: visible;
 }
 
 /* Princess: "Illustrated Book" – שורה אחת בלבד */
 .work-page-princess .work-page-hover-title {
+  height: calc(161px - 90px);
   white-space: nowrap;
   overflow: visible;
-  font-size: clamp(52px, 7.3vw, 68px);
-  letter-spacing: -0.02em;
+  font-size: clamp(40px, 5.7vw, 53px);
+  --title-marker-ls: -0.02em;
 }
 
-.work-page-princess .work-page-left-nav-title {
-  top: 210px;
+/* רקע מרקר צמוד לגלייפים (אנכית ואופקית) */
+.title-marker-fill {
+  display: inline-block;
+  line-height: 1;
+  padding: 0;
+  font: inherit;
+  font-weight: inherit;
+  letter-spacing: var(--title-marker-ls, 0em);
+  color: var(--title-marker-text-color);
+  background-color: var(--title-marker-color);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  text-box-trim: trim-both;
+  text-box-edge: cap text;
 }
 
-/* Title in upper part of left rectangle (e.g. wildflowers), same font as nav – below hover title, selectable */
+/* עמודי עבודה: המרקר השחור נצבע ב-JS לפי גבולות כל אות (lazy-media.js) */
+.work-page .title-marker-fill.marker-ink-ready {
+  background-color: transparent;
+  background-repeat: no-repeat;
+}
+
+.title-marker-fill::after {
+  content: '';
+  display: inline-block;
+  width: 0;
+  margin-left: calc(-1 * max(0em, var(--title-marker-ls, 0em)));
+}
+
+/* Title in upper part of left rectangle – רווח זהה למרווח שורת המפרט מעל קו התחתון */
 .work-page-left-nav-title {
   position: absolute;
-  top: 222px;
+  top: calc(90px + var(--frame-line-width) + var(--work-page-left-edge-gap));
   left: 0;
   width: 25%;
   padding: 0 12px;
@@ -687,7 +816,7 @@ body {
 /* Paragraph and specs at bottom of left rectangle (e.g. wildflowers) – pointer-events: auto so text is selectable */
 .work-page-left-footer {
   position: absolute;
-  bottom: 34px;
+  bottom: var(--work-page-left-edge-gap);
   left: 0;
   width: 25%;
   padding: 0 12px;
@@ -708,12 +837,30 @@ body {
   font-family: 'Heebo', sans-serif;
   font-weight: 300;
   font-size: 0.6875rem;
-  color: #758BFD;
+  color: #ff6c00;
   text-decoration: none;
   pointer-events: auto;
 }
 .work-page-left-link:hover {
   text-decoration: underline;
+}
+.work-page-left-awards {
+  margin: 0 0 0.5em 0;
+}
+.work-page-left-award-line {
+  margin: 0;
+  font-family: 'Heebo', sans-serif;
+  font-weight: 300;
+  font-size: 0.6875rem;
+  color: black;
+}
+.work-page-left-award-line + .work-page-left-award-line,
+.work-page-left-award-line + .work-page-left-link,
+.work-page-left-link + .work-page-left-award-line {
+  margin-top: 0.15em;
+}
+.work-page-left-awards .work-page-left-link {
+  margin-bottom: 0;
 }
 .work-page-left-specs {
   margin: 25px 0 0 0;
@@ -750,13 +897,17 @@ body {
 }
 
 /* דסקטופ: רווח אותיות מוגדל במעט בכותרת ובמילים שמחליפות אותה בהובר */
+.site-title-highlight {
+  display: none;
+}
+
 .site-title-text {
   font-size: clamp(74px, 16.5vw, 142px);
   font-size-adjust: 0.48;
-  font-weight: 700;
-  fill: black;
+  font-weight: 800;
+  fill: var(--title-marker-text-color);
   letter-spacing: 0.03em;
-  font-family: 'DingDongIrregular', Georgia, serif;
+  font-family: 'Heebo', sans-serif;
 }
 
 /* רווח אחיד בין מילים בכותרות דו-מיליות */
@@ -764,21 +915,28 @@ body {
   margin-left: 0.14em;
 }
 
-/* טקסט כותרת חלופי למובייל (שתי שורות) – מוסתר בדסקטופ, בפונט DingDongIrregular */
+/* טקסט כותרת חלופי למובייל (שתי שורות) – מוסתר בדסקטופ, בפונט MiriamLibre Bold */
 .site-title-text-mobile {
   display: none;
-  font-family: 'DingDongIrregular', Georgia, serif;
+  font-family: 'MiriamLibre-heebo', sans-serif;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  --title-marker-ls: -0.02em;
+  width: fit-content;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0;
+  line-height: 0;
+  background: transparent;
 }
 
-/* About paragraph: between title and right edge; Contact paragraph: starts at vertical line left of CONTACT (50%) */
+/* About / Contact בדסקטופ: הפסקה מתחילה בקו האנכי האמצעי (50%) */
 .about-paragraph-wrap {
   position: absolute;
-  top: 67px;
-  left: calc(24px + min(90vw, 600px) + 16px);
+  top: 45px;
+  left: 50%;
   right: 0;
-  height: 148px; /* 215px - 67px */
+  height: 170px; /* אותו טווח כמו כותרת Shira Peleg (עד nav-line-below ב-215px) */
   padding: 0 20px;
   box-sizing: border-box;
   overflow-y: auto;
@@ -794,13 +952,9 @@ body {
   height: 170px; /* 215px - 45px – full white band below nav */
 }
 
-.about-paragraph-wrap.is-contact.is-visible {
+.about-paragraph-wrap.is-visible {
   display: flex;
   align-items: center;
-}
-
-.about-paragraph-wrap.is-visible {
-  display: block;
 }
 
 .about-paragraph-text {
@@ -897,41 +1051,36 @@ body {
   pointer-events: none;
 }
 
-/* Two rectangles above grid (215–260, 260–305): work titles with vertical dividers */
-.works-rect {
+/* Two rows above grid (215–305): shared column grid so dividers align between rows */
+.works-rows-wrap {
   position: absolute;
+  top: 215px;
   left: 0;
   right: 0;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 2fr;
+  grid-template-rows: 45px 45px;
+  box-sizing: border-box;
+}
+
+.works-rect-1,
+.works-rect-2 {
+  display: contents;
+}
+
+.works-rect {
   height: 45px;
-  display: flex;
-  align-items: stretch;
   padding: 0;
   box-sizing: border-box;
 }
 
-.works-rect-1 { top: 215px; }
-.works-rect-2 { top: 260px; }
-
 .work-group {
   display: flex;
   align-items: stretch;
-  flex: 1;
   min-width: 0;
+  min-height: 45px;
   color: inherit;
   text-decoration: none;
-}
-
-.works-rect-1 .work-group:first-child {
-  flex: 2;
-}
-
-.works-rect-1 .work-group:nth-child(4),
-.works-rect-1 .work-group:last-child {
-  flex: 2;
-}
-
-.works-rect-2 .work-group:first-child {
-  flex: 2;
 }
 
 .work-item {
@@ -958,6 +1107,43 @@ body {
   height: 100%;
   border-left: 1px solid black;
   flex-shrink: 0;
+}
+
+/* סוג העבודה (לשעבר ב-hover על הכותרת) – מוצג רק במובייל */
+.work-item-kind {
+  display: none;
+}
+
+/* דסקטופ: מפריד בקצה התא, כותרת ממורכזת באזור שלפניו – זהה בשתי השורות */
+@media (min-width: 1101px) {
+  .works-rows-wrap .work-group .work-item {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-left: 0;
+    margin-right: 0;
+    justify-content: center;
+  }
+
+  /* שורה 2: Princess מתחת לעמודה הרחבה; South מתחת ל‑Canaanism + Lucid Dreams */
+  .works-rect-2 .work-group:nth-child(1) {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .works-rect-2 .work-group:nth-child(2) {
+    grid-column: 2 / 4;
+    grid-row: 2;
+  }
+  .works-rect-2-col4 {
+    grid-column: 4;
+    grid-row: 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-width: 0;
+    min-height: 45px;
+  }
+  .works-rect-2-col4 .work-group {
+    min-width: 0;
+  }
 }
 
 /* שורת ניווט תחתונה (מובייל) – מוצגת רק במובייל בעמודי עבודה */
@@ -994,6 +1180,7 @@ body {
 
   /* 1. גלילה רק בתוך המסגרת – body הוא אזור הגלילה, סרגלים מוסתרים */
   body {
+    position: relative;
     margin: 0;
     padding-top: 52px; /* רווח לניווט העליון (6px + 45px + 1px קו) */
     width: 100%;
@@ -1006,7 +1193,7 @@ body {
     scrollbar-width: none;
     -ms-overflow-style: none;
     display: grid;
-    grid-template-rows: auto auto auto repeat(9, 1fr);
+    grid-template-rows: auto auto auto repeat(8, 1fr);
   }
 
   body::-webkit-scrollbar {
@@ -1068,19 +1255,24 @@ body {
     left: 0;
     right: 0;
     width: 100%;
-    top: calc(var(--mobile-nav-bottom) - 50px);
+    top: var(--mobile-nav-bottom);
     height: var(--mobile-title-band-height);
     min-height: 0;
     transform: none;
+    box-sizing: border-box;
+    /* padding תחתון גדול יותר – מרכז אופטי מעל האמצע הגיאומטרי (לא צמוד לקו התחתון) */
+    padding: 0 12px 52px;
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
+    overflow: visible;
+    z-index: 5;
   }
 
   .site-title {
     width: 100%;
     height: 100%;
+    min-height: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1093,22 +1285,19 @@ body {
 
   /* כותרת – גודל מחושב ב-JS כדי למלא את המלבן; fallback CSS לפני טעינה */
   .site-title-text-mobile {
-    display: block;
-    font-size: min(calc(var(--mobile-title-band-height) / 1.24), 22vw);
-    line-height: 0.62;
-    min-height: 0;
+    display: inline-block;
+    width: fit-content;
     max-width: 100%;
-    max-height: 100%;
+    font-family: 'Heebo', sans-serif;
+    font-weight: 800;
+    font-size: min(calc((var(--mobile-title-band-height) - 24px) / 2.4), 18vw);
+    line-height: 1;
+    min-height: 0;
     text-align: center;
     box-sizing: border-box;
-    letter-spacing: 0.05em;
-  }
-
-  /* כותרת בתצוגת long press – באותו גודל כמו בעמודי העבודות (work-page-hover-title) */
-  .site-title-text-mobile.title-work-preview {
-    font-size: 2.1rem;
-    line-height: 1.1;
-    min-height: 0;
+    --title-marker-ls: 0.05em;
+    letter-spacing: var(--title-marker-ls);
+    transform: translateY(-6px);
   }
 
   /* במובייל בלבד: כש-ABOUT פתוח – הכותרת מתחבאת והפסקה מופיעה באותו מקום */
@@ -1161,21 +1350,20 @@ body {
     display: none;
   }
 
-  /* כש-CONTACT פתוח במובייל – רק הכותרת מוסתרת, טקסט המייל/מספר מופיע במקומה, שום דבר לא זז */
+  /* כש-CONTACT פתוח במובייל – הכותרת מוסתרת, פרטי הקשר באותו מיקום התחלה כמו פסקת ABOUT */
   body.contact-open-mobile .site-title-wrap {
     visibility: hidden;
   }
   body.contact-open-mobile .about-paragraph-wrap {
     position: absolute;
-    top: var(--mobile-nav-bottom);
+    top: 14px;
     left: 0;
     right: 0;
-    height: var(--mobile-title-band-height);
+    height: auto;
     min-height: 0;
     margin: 0;
     padding: 0 12px;
-    display: flex;
-    align-items: center;
+    display: block;
     overflow: visible;
     z-index: 10;
   }
@@ -1229,6 +1417,10 @@ body {
     margin-bottom: 30px; /* רווח מעל רשימת העבודות – לא בתוך המלבנים */
   }
 
+  .works-rows-wrap {
+    display: contents;
+  }
+
   .works-rect {
     position: static;
     top: auto;
@@ -1244,16 +1436,18 @@ body {
     display: contents;
   }
 
-  /* מיקום כל עבודה בשורת גריד קבועה – 9 מלבנים שווים בגובה */
+  /* מיקום כל עבודה בשורת גריד קבועה – 8 מלבנים שווים בגובה */
   .works-rect-1 .work-group:nth-child(1) { grid-row: 4; }
   .works-rect-1 .work-group:nth-child(2) { grid-row: 5; }
   .works-rect-1 .work-group:nth-child(3) { grid-row: 6; }
   .works-rect-1 .work-group:nth-child(4) { grid-row: 7; }
-  .works-rect-1 .work-group:nth-child(5) { grid-row: 8; }
-  .works-rect-2 .work-group:nth-child(1) { grid-row: 9; }
-  .works-rect-2 .work-group:nth-child(2) { grid-row: 10; }
-  .works-rect-2 .work-group:nth-child(3) { grid-row: 11; }
-  .works-rect-2 .work-group:nth-child(4) { grid-row: 12; }
+  .works-rect-2 .work-group:nth-child(1) { grid-row: 8; }
+  .works-rect-2 .work-group:nth-child(2) { grid-row: 9; }
+  .works-rect-2-col4 {
+    display: contents;
+  }
+  .works-rect-2 .works-rect-2-col4 .work-group:nth-child(1) { grid-row: 10; }
+  .works-rect-2 .works-rect-2-col4 .work-group:nth-child(2) { grid-row: 11; }
 
   .work-group {
     border-top: 1px solid black;
@@ -1262,13 +1456,48 @@ body {
     min-height: 0;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    gap: 0.75em;
+  /* ריווח אופקי = קצוות טקסט כותרת Shira Peleg (מחושב ב-JS) */
+    padding: 0.35em var(--mobile-work-inset-right, 12px) 0.35em var(--mobile-work-inset-left, 12px);
   }
 
   .work-item {
     font-size: 0.8rem;
-    padding: 0 0.5em;      /* בלי רווח אנכי נוסף, כדי שהגובה יישאר 45px */
+    padding: 0;
+    margin-left: 0;
+    margin-right: 0;
+    flex: 1 1 auto;
+    min-width: 0;
     white-space: normal;
-    text-align: center;
+    text-align: left;
+    justify-content: flex-start;
+  }
+
+  .work-item-kind {
+    display: block;
+    flex: 0 0 auto;
+    max-width: 42%;
+    padding: 0;
+    font-family: 'Heebo', sans-serif;
+    font-weight: 800;
+    font-size: 0.8rem;
+    line-height: 1.15;
+    text-align: right;
+    white-space: normal;
+  }
+
+  .work-group:hover .work-item-kind {
+    color: white;
+  }
+
+  /* ״I THINK HE'S LISTENING TO US״ – מרכאות מאותו פונט/גודל כמו הכותרת (לא גרשיים עבריים עם fallback) */
+  .listening-title-gershayim {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+    letter-spacing: inherit;
   }
 
   .work-sep {
@@ -1347,6 +1576,46 @@ body {
     min-height: 0;
   }
 
+  .work-page .south-gallery {
+    height: auto;
+    min-height: 0;
+  }
+
+  /* South: תמיד 2 תמונות זו לצד זו בשורה (חוץ מ־7) */
+  .work-page .south-row:not(.south-row-full) {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+
+  /* פוסטרים 1–5 במובייל: שתי שורות (1+2, 3+4+5) כמו במקור */
+  .work-page .canaanism-row.canaanism-row-motion-posters {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: auto auto;
+    gap: var(--work-page-separator-gap);
+  }
+  .work-page .canaanism-row-motion-posters .canaanism-cell:nth-child(1) {
+    grid-column: 1 / span 3;
+    grid-row: 1;
+  }
+  .work-page .canaanism-row-motion-posters .canaanism-cell:nth-child(2) {
+    grid-column: 4 / span 3;
+    grid-row: 1;
+  }
+  .work-page .canaanism-row-motion-posters .canaanism-cell:nth-child(3) {
+    grid-column: 1 / span 2;
+    grid-row: 2;
+  }
+  .work-page .canaanism-row-motion-posters .canaanism-cell:nth-child(4) {
+    grid-column: 3 / span 2;
+    grid-row: 2;
+  }
+  .work-page .canaanism-row-motion-posters .canaanism-cell:nth-child(5) {
+    grid-column: 5 / span 2;
+    grid-row: 2;
+  }
+
   /* וידאו בגלריה – רוחב ומראה כמו שאר התמונות, בלי חיתוך דסקטופ */
   .work-page .work-page-gallery video {
     width: 100%;
@@ -1399,67 +1668,14 @@ body {
     margin-top: 0;
   }
 
-  /* גלריה South – במובייל: flex בעמודה אחת כדי שסדר התמונות יהיה תמיד לפי DOM גם בטלפון אמיתי (column-count עלול ליצור סדר שונה בחלק מהדפדפנים) */
-  .work-page .work-page-gallery-2col .work-page-gallery-rest {
-    column-count: 1;
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* South Film Festival – במובייל בלבד: סדר תצוגה כך ש־2.jpg יופיע מיד אחרי 1.gif */
-  .work-page .work-page-gallery-2col .work-page-gallery-rest .south-gallery-item:nth-child(1) { order: 1; }
-  .work-page .work-page-gallery-2col .work-page-gallery-rest .south-gallery-item:nth-child(10) { order: 2; }
-  .work-page .work-page-gallery-2col .work-page-gallery-rest .south-gallery-item:nth-child(2) { order: 3; }
-  .work-page .work-page-gallery-2col .work-page-gallery-rest .south-gallery-item:nth-child(3) { order: 4; }
-  .work-page .work-page-gallery-2col .work-page-gallery-rest .south-gallery-item:nth-child(4) { order: 5; }
-  .work-page .work-page-gallery-2col .work-page-gallery-rest .south-gallery-item:nth-child(5) { order: 6; }
-  .work-page .work-page-gallery-2col .work-page-gallery-rest .south-gallery-item:nth-child(6) { order: 8; }
-  .work-page .work-page-gallery-2col .work-page-gallery-rest .south-gallery-item:nth-child(7) { order: 7; }
-  .work-page .work-page-gallery-2col .work-page-gallery-rest .south-gallery-item:nth-child(8) { order: 9; }
-  .work-page .work-page-gallery-2col .work-page-gallery-rest .south-gallery-item:nth-child(9) { order: 10; }
-  .work-page .work-page-gallery-2col .work-page-gallery-rest .south-gallery-item:nth-child(11) { order: 11; }
-  .work-page .work-page-gallery-2col .work-page-gallery-rest .south-gallery-item:nth-child(12) { order: 12; }
-  .work-page .work-page-gallery-2col .work-page-gallery-rest .south-gallery-item:nth-child(13) { order: 13; }
-  .work-page .work-page-gallery-2col .work-page-gallery-rest .south-gallery-item:nth-child(14) { order: 14; }
-  .work-page .work-page-gallery-2col .work-page-gallery-rest .south-gallery-item:nth-child(15) { order: 15; }
-  .work-page .work-page-gallery-2col .work-page-gallery-rest .south-gallery-item:nth-child(16) { order: 16; }
-  .work-page .work-page-gallery-2col .work-page-gallery-rest .south-gallery-item:nth-child(17) { order: 17; }
-  .work-page .work-page-gallery-2col .work-page-gallery-rest .south-gallery-item:nth-child(18) { order: 18; }
-  .work-page .work-page-gallery-2col .work-page-gallery-rest .south-gallery-item:nth-child(19) { order: 19; }
-  .work-page .work-page-gallery-2col .work-page-gallery-rest .south-gallery-item:nth-child(20) { order: 20; }
-
-  /* כותרות בעמודי עבודות – גלויות, יישור שמאל כמו פסקת הטקסט (12px); גוש הטקסט העליון כקבוצה 10px למעלה */
-  .work-page .work-page-hover-title {
-    display: block !important;
-    visibility: visible !important;
-    position: static;
-    width: 100%;
-    padding: 16px 12px 0;
-    box-sizing: border-box;
-    font-family: 'DingDongIrregular', Georgia, serif;
-    font-weight: 700;
-    font-size: 4.5rem;
-    line-height: 1.1;
-    margin: 20px 0 0; /* 30px → 20px: הזזת גוש הטקסט העליון 10px למעלה */
-    color: black;
-    opacity: 1;
-    z-index: 5;
-  }
-
-  .work-page-princess .work-page-hover-title {
-    white-space: nowrap;
-    font-size: clamp(3.2rem, 13.5vw, 4.6rem);
-    letter-spacing: -0.02em;
-  }
-
   .work-page .work-page-left-nav-title {
     display: block !important;
     visibility: visible !important;
     position: static;
     width: 100%;
-    padding: 0 12px 0;
+    padding: var(--work-page-left-edge-gap) 12px 0;
     box-sizing: border-box;
-    margin: -6px 0 0;
+    margin: 0;
     color: black;
     opacity: 1;
   }
@@ -1480,6 +1696,11 @@ body {
 
   .work-page-left-specs {
     margin: 24px 0 0 0;
+  }
+
+  /* עמוד Listening – במובייל: רווח בין פסקת התיאור לרשימת הנקודות */
+  body.work-page:has(.work-page-gallery-listening) .work-page-left-awards {
+    margin-top: 24px;
   }
 
   /* בעמודי עבודות במובייל: קווי החלוקה והמחיצה מוסתרים; PREV/NEXT מוצגים בשורה התחתונה בתוך המסגרת */
@@ -1565,5 +1786,17 @@ body {
 
   .work-page .scroll-to-top-btn svg {
     flex-shrink: 0;
+  }
+
+  /* מובייל: סרטונים ללא פקדי נגן מובנים (כפתור Play של Safari) */
+  .work-page main video {
+    object-fit: contain;
+  }
+  .work-page main video::-webkit-media-controls {
+    display: none !important;
+  }
+  .work-page main video::-webkit-media-controls-start-playback-button {
+    display: none !important;
+    -webkit-appearance: none;
   }
 }

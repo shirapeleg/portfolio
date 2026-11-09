@@ -18,7 +18,7 @@
 פתחי **Terminal** (טרמינל) ועברי לתיקיית הפרויקט:
 
 ```bash
-cd "/Users/shirapeleg/Documents/לימודים/תיק עבודות לקרסר/prot2"
+cd "/Users/shirapeleg/Documents/לימודים/תיק עבודות לקרסר/prot2 081126"
 ```
 
 **פעם ראשונה עם Git?** הרצי קודם (עם השם והאימייל שלך):
@@ -27,13 +27,13 @@ git config --global user.email "shirapeleg98@gmail.com"
 git config --global user.name "Shira Peleg"
 ```
 
-אז הרצי את הפקודות הבאות. **החלפי רק את `YOUR-USERNAME`** בשם המשתמש שלך ב-GitHub (ה-repo שלך: **shirapelegportfolio**):
+אז הרצי את הפקודות הבאות (ה-repo שלך: **portfolio** תחת המשתמש **shirapeleg**):
 
 ```bash
 git add .
 git commit -m "First commit - portfolio website"
 git branch -M main
-git remote add origin https://github.com/YOUR-USERNAME/shirapelegportfolio.git
+git remote add origin https://github.com/shirapeleg/portfolio.git
 git push -u origin main
 ```
 
@@ -51,9 +51,7 @@ git push -u origin main
 
 אחרי דקה־שתיים האתר יהיה זמין בכתובת:
 
-**https://YOUR-USERNAME.github.io/shirapelegportfolio/**
-
-(למשל אם שם המשתמש שלך הוא shirapeleg98: `https://shirapeleg98.github.io/shirapelegportfolio/`)
+**https://shirapeleg.github.io/portfolio/index.html**
 
 ---
 
@@ -61,7 +59,7 @@ git push -u origin main
 אחרי שתשני קבצים בפרויקט, העלאה מחדש:
 
 ```bash
-cd "/Users/shirapeleg/Documents/לימודים/תיק עבודות לקרסר/prot2"
+cd "/Users/shirapeleg/Documents/לימודים/תיק עבודות לקרסר/prot2 081126"
 git add .
 git commit -m "תיאור העדכון"
 git push

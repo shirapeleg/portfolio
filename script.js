@@ -16,6 +16,10 @@ document.addEventListener('DOMContentLoaded', function () {
   /* מובייל: האם כבר רצה אנימציית הפתיחה של about (me.png) – מאפסים כשסוגרים את about */
   let aboutIntroRan = false;
 
+  function isDesktopAboutOpen() {
+    return aboutVisible && window.matchMedia && window.matchMedia('(min-width: 1101px)').matches;
+  }
+
   function updatePanelVisibility() {
     if (!aboutWrap) return;
     var anyVisible = aboutVisible || contactVisible;
@@ -32,11 +36,14 @@ document.addEventListener('DOMContentLoaded', function () {
     if (mqMobile && mqMobile.matches) {
       document.body.classList.toggle('about-open-mobile', !!aboutVisible);
       document.body.classList.toggle('contact-open-mobile', !!contactVisible);
+      document.body.classList.remove('about-open-desktop');
       positionMobileTitle();
       if (!aboutVisible) aboutIntroRan = false;
     } else {
       document.body.classList.remove('about-open-mobile');
       document.body.classList.remove('contact-open-mobile');
+      document.body.classList.toggle('about-open-desktop', !!aboutVisible);
+      if (aboutVisible) restoreTitle();
     }
     if (typeof layoutGrid === 'function') layoutGrid();
   }
@@ -75,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  /* כותרת "Shira Peleg" – פונט קבוע DingDongIrregular בלבד */
+  /* כותרת "Shira Peleg" – Heebo ExtraBold */
   const titleEl = document.querySelector('.site-title-text');
   const titleMobileEl = document.querySelector('.site-title-text-mobile');
   const titleWrap = document.querySelector('.site-title-wrap');
@@ -91,42 +98,70 @@ document.addEventListener('DOMContentLoaded', function () {
     return html;
   }
 
+  function wrapTitleMarkerHtml(inner) {
+    return '<span class="title-marker-fill">' + inner + '</span>';
+  }
+
   function titleToMobileHtml(text) {
     var words = String(text).trim().split(/\s+/);
-    if (words.length < 2) return words[0] || '';
+    if (words.length < 2) return wrapTitleMarkerHtml(words[0] || '');
     var html = words[0];
     for (var i = 1; i < words.length; i++) {
       html += '<span class="title-word-gap">' + words[i] + '</span>';
     }
-    return html;
+    return wrapTitleMarkerHtml(html);
   }
 
   function setSiteTitle(text) {
+    if (isDesktopAboutOpen()) return;
     if (titleEl) titleEl.innerHTML = titleToSvgHtml(text);
     if (titleMobileEl) titleMobileEl.innerHTML = titleToMobileHtml(text);
-    applyTitleFontDingDong();
+    applyTitleFontMiriamLibre();
   }
 
   function fitMobileTitle() {
     if (!titleMobileEl || !titleWrap) return;
     var mq = window.matchMedia && window.matchMedia('(max-width: 1100px)');
     if (!mq || !mq.matches) return;
-    if (titleMobileEl.classList.contains('title-work-preview')) return;
-
     titleMobileEl.style.fontSize = '';
-    var bandH = titleWrap.clientHeight;
-    var bandW = titleWrap.clientWidth;
-    if (bandH <= 0 || bandW <= 0) return;
+    var wrapStyle = window.getComputedStyle(titleWrap);
+    var padT = parseFloat(wrapStyle.paddingTop) || 0;
+    var padB = parseFloat(wrapStyle.paddingBottom) || 0;
+    var padL = parseFloat(wrapStyle.paddingLeft) || 0;
+    var padR = parseFloat(wrapStyle.paddingRight) || 0;
+    var availH = titleWrap.clientHeight - padT - padB;
+    var availW = titleWrap.clientWidth - padL - padR;
+    if (availH <= 0 || availW <= 0) return;
 
-    var lineHeightRatio = 0.62;
-    var fontSize = bandH / (lineHeightRatio * 2);
+    var safeH = Math.max(0, availH - 4);
+    var safeW = Math.max(0, availW - 4);
+    var fontSize = safeH / 2;
     titleMobileEl.style.fontSize = fontSize + 'px';
 
-    for (var i = 0; i < 60; i++) {
-      if (titleMobileEl.scrollWidth <= bandW && titleMobileEl.scrollHeight <= bandH) break;
-      fontSize *= 0.96;
+    for (var i = 0; i < 80; i++) {
+      var rect = titleMobileEl.getBoundingClientRect();
+      if (rect.width <= safeW + 0.5 && rect.height <= safeH + 0.5) break;
+      fontSize *= 0.95;
       titleMobileEl.style.fontSize = fontSize + 'px';
     }
+    syncMobileWorkListToTitle();
+  }
+
+  function syncMobileWorkListToTitle() {
+    var root = document.documentElement;
+    var mq = window.matchMedia && window.matchMedia('(max-width: 1100px)');
+    if (!mq || !mq.matches || !titleMobileEl) {
+      root.style.removeProperty('--mobile-work-inset-left');
+      root.style.removeProperty('--mobile-work-inset-right');
+      return;
+    }
+    var bodyRect = document.body.getBoundingClientRect();
+    var titleRect = titleMobileEl.getBoundingClientRect();
+    if (titleRect.width < 1) return;
+    var insetLeft = Math.max(0, titleRect.left - bodyRect.left);
+    var insetRight = Math.max(0, bodyRect.right - titleRect.right);
+    root.style.setProperty('--mobile-work-inset-left', insetLeft + 'px');
+    root.style.setProperty('--mobile-work-inset-right', insetRight + 'px');
   }
 
   function positionMobileTitle() {
@@ -140,6 +175,8 @@ document.addEventListener('DOMContentLoaded', function () {
       titleWrap.style.width = '';
       titleWrap.style.transform = '';
       if (titleMobileEl) titleMobileEl.style.fontSize = '';
+      document.documentElement.style.removeProperty('--mobile-work-inset-left');
+      document.documentElement.style.removeProperty('--mobile-work-inset-right');
       if (aboutWrap) {
         aboutWrap.style.position = '';
         aboutWrap.style.left = '';
@@ -149,6 +186,10 @@ document.addEventListener('DOMContentLoaded', function () {
         aboutWrap.style.width = '';
         aboutWrap.style.marginTop = '';
         aboutWrap.style.padding = '';
+        aboutWrap.style.height = '';
+        aboutWrap.style.minHeight = '';
+        aboutWrap.style.display = '';
+        aboutWrap.style.alignItems = '';
       }
       return;
     }
@@ -160,21 +201,28 @@ document.addEventListener('DOMContentLoaded', function () {
       ? topLine.getBoundingClientRect().bottom
       : 52;
     var worksTop = firstWorkRow.getBoundingClientRect().top;
-    if (worksTop <= navBottom) return;
+    var bandHeight = worksTop - navBottom;
+    if (bandHeight <= 0) return;
+
+    var bodyRect = document.body.getBoundingClientRect();
+    var bandTop = navBottom - bodyRect.top;
 
     document.documentElement.style.setProperty('--mobile-nav-bottom', navBottom + 'px');
     document.documentElement.style.setProperty('--mobile-works-start', worksTop + 'px');
+    document.documentElement.style.setProperty('--mobile-title-band-height', bandHeight + 'px');
 
-    /* מיקום וגובה המלבן נקבעים ב-CSS לפי המשתנים – לא לדרוס */
-    titleWrap.style.top = '';
-    titleWrap.style.height = '';
-    titleWrap.style.left = '';
-    titleWrap.style.width = '';
-    titleWrap.style.transform = '';
+    titleWrap.style.top = bandTop + 'px';
+    titleWrap.style.height = bandHeight + 'px';
+    titleWrap.style.left = '0';
+    titleWrap.style.width = '100%';
+    titleWrap.style.transform = 'none';
 
-    /* מובייל: כש-ABOUT פתוח – הפסקה מתחילה מיד מתחת לשורת הניווט העליונה */
+    /* מובייל: כש-ABOUT/CONTACT פתוח – הפסקה מתחילה מיד מתחת לשורת הניווט העליונה */
     if (aboutWrap) {
-      if (document.body.classList.contains('about-open-mobile')) {
+      if (
+        document.body.classList.contains('about-open-mobile') ||
+        document.body.classList.contains('contact-open-mobile')
+      ) {
         aboutWrap.style.position = 'absolute';
         aboutWrap.style.left = '0';
         aboutWrap.style.right = 'auto';
@@ -183,6 +231,10 @@ document.addEventListener('DOMContentLoaded', function () {
         aboutWrap.style.width = '100%';
         aboutWrap.style.marginTop = '0';
         aboutWrap.style.padding = '0 12px';
+        aboutWrap.style.height = 'auto';
+        aboutWrap.style.minHeight = '0';
+        aboutWrap.style.display = 'block';
+        aboutWrap.style.alignItems = '';
       } else {
         aboutWrap.style.position = '';
         aboutWrap.style.left = '';
@@ -192,30 +244,90 @@ document.addEventListener('DOMContentLoaded', function () {
         aboutWrap.style.width = '';
         aboutWrap.style.marginTop = '';
         aboutWrap.style.padding = '';
+        aboutWrap.style.height = '';
+        aboutWrap.style.minHeight = '';
+        aboutWrap.style.display = '';
+        aboutWrap.style.alignItems = '';
       }
     }
     fitMobileTitle();
   }
 
-  function applyTitleFontDingDong() {
-    var fontName = 'DingDongIrregular';
+  function updateSiteTitleHighlight() {
+    var highlight = document.querySelector('.site-title-highlight');
+    var svg = document.querySelector('.site-title-svg');
+    if (!titleEl || !highlight || !svg) return;
+    requestAnimationFrame(function () {
+      try {
+        var screenRect = titleEl.getBoundingClientRect();
+        var inv = svg.getScreenCTM() && svg.getScreenCTM().inverse();
+        if (inv && screenRect.width >= 1 && screenRect.height >= 1) {
+          var pt = svg.createSVGPoint();
+          function toSvg(cx, cy) {
+            pt.x = cx;
+            pt.y = cy;
+            return pt.matrixTransform(inv);
+          }
+          var corners = [
+            toSvg(screenRect.left, screenRect.top),
+            toSvg(screenRect.right, screenRect.top),
+            toSvg(screenRect.right, screenRect.bottom),
+            toSvg(screenRect.left, screenRect.bottom)
+          ];
+          var xs = corners.map(function (p) { return p.x; });
+          var ys = corners.map(function (p) { return p.y; });
+          var x1 = Math.min.apply(null, xs);
+          var x2 = Math.max.apply(null, xs);
+          var y1 = Math.min.apply(null, ys);
+          var y2 = Math.max.apply(null, ys);
+          highlight.setAttribute('x', x1);
+          highlight.setAttribute('y', y1);
+          highlight.setAttribute('width', x2 - x1);
+          highlight.setAttribute('height', y2 - y1);
+          return;
+        }
+        var x1 = Infinity;
+        var y1 = Infinity;
+        var x2 = -Infinity;
+        var y2 = -Infinity;
+        var n = titleEl.getNumberOfChars();
+        for (var i = 0; i < n; i++) {
+          var ext = titleEl.getExtentOfChar(i);
+          if (!ext || !ext.width) continue;
+          x1 = Math.min(x1, ext.x);
+          y1 = Math.min(y1, ext.y);
+          x2 = Math.max(x2, ext.x + ext.width);
+          y2 = Math.max(y2, ext.y + ext.height);
+        }
+        if (x1 === Infinity) return;
+        highlight.setAttribute('x', x1);
+        highlight.setAttribute('y', y1);
+        highlight.setAttribute('width', x2 - x1);
+        highlight.setAttribute('height', y2 - y1);
+      } catch (e) { /* layout not ready */ }
+    });
+  }
+
+  function applyTitleFontMiriamLibre() {
     if (titleEl) {
-      titleEl.style.fontFamily = "'" + fontName + "', Georgia, serif";
+      titleEl.style.fontFamily = "'Heebo', sans-serif";
+      titleEl.style.fontWeight = '800';
       titleEl.removeAttribute('transform');
     }
     if (titleMobileEl) {
-      titleMobileEl.style.fontFamily = "'" + fontName + "', Georgia, serif";
+      titleMobileEl.style.fontFamily = "'Heebo', sans-serif";
+      titleMobileEl.style.fontWeight = '800';
       titleMobileEl.style.fontSize = ''; /* גודל מ-CSS (clamp) כדי שהכותרת תהיה גדולה וממורכזת */
       titleMobileEl.style.lineHeight = ''; /* line-height מ-CSS */
       titleMobileEl.style.transform = '';
     }
+    updateSiteTitleHighlight();
   }
 
   function restoreTitle() {
-    if (titleMobileEl) titleMobileEl.classList.remove('title-work-preview');
     if (titleEl) titleEl.innerHTML = titleToSvgHtml('Shira Peleg');
-    if (titleMobileEl) titleMobileEl.innerHTML = 'Shira<br>Peleg';
-    applyTitleFontDingDong();
+    if (titleMobileEl) titleMobileEl.innerHTML = wrapTitleMarkerHtml('Shira<br>Peleg');
+    applyTitleFontMiriamLibre();
     fitMobileTitle();
   }
 
@@ -225,211 +337,112 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // מיקום מדויק של הכותרת במובייל – בדיוק באמצע בין הניווט לשורת העבודה הראשונה
   positionMobileTitle();
-  window.addEventListener('resize', positionMobileTitle);
+  window.addEventListener('resize', function () {
+    positionMobileTitle();
+    applyTitleFontMiriamLibre();
+    updateSiteTitleHighlight();
+  });
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(function () {
       fitMobileTitle();
+      updateSiteTitleHighlight();
     });
   }
 
-  /* דסקטופ: hover על עבודה מחליף כותרת. מובייל: החלפת כותרת רק ב-long press */
+  /* דסקטופ בלבד: hover על עבודה מחליף את כותרת Shira Peleg */
   const isMobileForTitle = window.matchMedia && window.matchMedia('(max-width: 1100px)').matches;
-  var longPressTimer = null;
-  var longPressTriggered = false;
-  var preventClickAfterLongPress = false;
 
-  function setupMobileLongPress(groupEl, showTitleFn) {
-    if (!groupEl || !titleEl) return;
-    groupEl.addEventListener('touchstart', function () {
-      if (longPressTimer) clearTimeout(longPressTimer);
-      longPressTriggered = false;
-      longPressTimer = setTimeout(function () {
-        longPressTimer = null;
-        longPressTriggered = true;
-        preventClickAfterLongPress = true;
-        if (titleMobileEl) titleMobileEl.classList.add('title-work-preview');
-        showTitleFn();
-      }, 500);
-    }, { passive: true });
-    groupEl.addEventListener('touchmove', function () {
-      if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
-    }, { passive: true });
-    groupEl.addEventListener('touchend', function () {
-      if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
-      if (longPressTriggered) {
-        setTimeout(restoreTitle, 1000);
-      }
-      longPressTriggered = false;
-    }, { passive: true });
-    groupEl.addEventListener('click', function (e) {
-      if (preventClickAfterLongPress) {
-        e.preventDefault();
-        e.stopPropagation();
-        preventClickAfterLongPress = false;
-      }
-    }, true);
-  }
-
-  /* Hover on WILDFLOWERS PROTECTION LAW: show "Broadsheet" in DingDongIrregular, same size */
+  /* Hover on WILDFLOWERS PROTECTION LAW: show "Broadsheet" in DingDong Irregular, same size */
   const wildflowersGroup = Array.from(document.querySelectorAll('.work-group')).find(function (a) {
     const span = a.querySelector('.work-item');
     return span && span.textContent.trim() === 'WILDFLOWERS PROTECTION LAW';
   });
-  if (wildflowersGroup && titleEl) {
-    if (!isMobileForTitle) {
-      wildflowersGroup.addEventListener('mouseenter', function () {
-        setSiteTitle('Broadsheet');
-      });
-      wildflowersGroup.addEventListener('mouseleave', restoreTitle);
-    } else {
-      setupMobileLongPress(wildflowersGroup, function () {
-        setSiteTitle('Broadsheet');
-      });
-    }
+  if (wildflowersGroup && titleEl && !isMobileForTitle) {
+    wildflowersGroup.addEventListener('mouseenter', function () {
+      setSiteTitle('Broadsheet');
+    });
+    wildflowersGroup.addEventListener('mouseleave', restoreTitle);
   }
 
-  /* Hover on STREET: show "Motion" in DingDongIrregular, same size */
+  /* Hover on STREET: show "Motion Series" in DingDong Irregular, same size */
   const streetGroup = Array.from(document.querySelectorAll('.work-group')).find(function (a) {
     const span = a.querySelector('.work-item');
     return span && span.textContent.trim() === 'STREET';
   });
-  if (streetGroup && titleEl) {
-    if (!isMobileForTitle) {
-      streetGroup.addEventListener('mouseenter', function () {
-        setSiteTitle('Motion');
-      });
-      streetGroup.addEventListener('mouseleave', restoreTitle);
-    } else {
-      setupMobileLongPress(streetGroup, function () {
-        setSiteTitle('Motion');
-      });
-    }
+  if (streetGroup && titleEl && !isMobileForTitle) {
+    streetGroup.addEventListener('mouseenter', function () {
+      setSiteTitle('Motion Series');
+    });
+    streetGroup.addEventListener('mouseleave', restoreTitle);
   }
 
-  /* Hover on BLOCK: show "Book Covers" in DingDongIrregular, same size */
+  /* Hover on BLOCK: show "Book Covers" in DingDong Irregular, same size */
   const blockGroup = Array.from(document.querySelectorAll('.work-group')).find(function (a) {
     const span = a.querySelector('.work-item');
     return span && span.textContent.trim() === 'BLOCK';
   });
-  if (blockGroup && titleEl) {
-    if (!isMobileForTitle) {
-      blockGroup.addEventListener('mouseenter', function () {
-        setSiteTitle('Book Covers');
-      });
-      blockGroup.addEventListener('mouseleave', restoreTitle);
-    } else {
-      setupMobileLongPress(blockGroup, function () {
-        setSiteTitle('Book Covers');
-      });
-    }
+  if (blockGroup && titleEl && !isMobileForTitle) {
+    blockGroup.addEventListener('mouseenter', function () {
+      setSiteTitle('Book Covers');
+    });
+    blockGroup.addEventListener('mouseleave', restoreTitle);
   }
 
-  /* Hover on THE PRINCESS WILL COME AT FOUR: show "Illustrated Book" in DingDongIrregular, same size */
+  /* Hover on THE PRINCESS WILL COME AT FOUR: show "Illustrated Book" in DingDong Irregular, same size */
   const princessGroup = Array.from(document.querySelectorAll('.work-group')).find(function (a) {
     const span = a.querySelector('.work-item');
     return span && span.textContent.trim() === 'THE PRINCESS WILL COME AT FOUR';
   });
-  if (princessGroup && titleEl) {
-    if (!isMobileForTitle) {
-      princessGroup.addEventListener('mouseenter', function () {
-        setSiteTitle('Illustrated Book');
-      });
-      princessGroup.addEventListener('mouseleave', restoreTitle);
-    } else {
-      setupMobileLongPress(princessGroup, function () {
-        setSiteTitle('Illustrated Book');
-      });
-    }
+  if (princessGroup && titleEl && !isMobileForTitle) {
+    princessGroup.addEventListener('mouseenter', function () {
+      setSiteTitle('Illustrated Book');
+    });
+    princessGroup.addEventListener('mouseleave', restoreTitle);
   }
 
-  /* Hover on CANAANISM: show "Motion Posters" in DingDongIrregular, same size */
+  /* Hover on CANAANISM: show "Motion Posters" in DingDong Irregular, same size */
   const canaanismGroup = Array.from(document.querySelectorAll('.work-group')).find(function (a) {
     const span = a.querySelector('.work-item');
     return span && span.textContent.trim() === 'CANAANISM';
   });
-  if (canaanismGroup && titleEl) {
-    if (!isMobileForTitle) {
-      canaanismGroup.addEventListener('mouseenter', function () {
-        setSiteTitle('Motion Posters');
-      });
-      canaanismGroup.addEventListener('mouseleave', restoreTitle);
-    } else {
-      setupMobileLongPress(canaanismGroup, function () {
-        setSiteTitle('Motion Posters');
-      });
-    }
+  if (canaanismGroup && titleEl && !isMobileForTitle) {
+    canaanismGroup.addEventListener('mouseenter', function () {
+      setSiteTitle('Motion Posters');
+    });
+    canaanismGroup.addEventListener('mouseleave', restoreTitle);
   }
 
-  /* Hover on LUCID DREAMS: show "Website" in DingDongIrregular, same size */
+  /* Hover on LUCID DREAMS: show "Web Design" in DingDong Irregular, same size */
   const lucidDreamsGroup = Array.from(document.querySelectorAll('.work-group')).find(function (a) {
     const span = a.querySelector('.work-item');
     return span && span.textContent.trim() === 'LUCID DREAMS';
   });
-  if (lucidDreamsGroup && titleEl) {
-    if (!isMobileForTitle) {
-      lucidDreamsGroup.addEventListener('mouseenter', function () {
-        setSiteTitle('Website');
-      });
-      lucidDreamsGroup.addEventListener('mouseleave', restoreTitle);
-    } else {
-      setupMobileLongPress(lucidDreamsGroup, function () {
-        setSiteTitle('Website');
-      });
-    }
+  if (lucidDreamsGroup && titleEl && !isMobileForTitle) {
+    lucidDreamsGroup.addEventListener('mouseenter', function () {
+      setSiteTitle('Web Design');
+    });
+    lucidDreamsGroup.addEventListener('mouseleave', restoreTitle);
   }
 
-  /* Hover on SOUTH INTERNATIONAL FILM FESTIVAL: show "Branding" in DingDongIrregular, same size */
+  /* Hover on SOUTH INTERNATIONAL FILM FESTIVAL: show "Branding" in DingDong Irregular, same size */
   const southFestivalGroup = Array.from(document.querySelectorAll('.work-group')).find(function (a) {
     const span = a.querySelector('.work-item');
     return span && span.textContent.trim() === 'SOUTH INTERNATIONAL FILM FESTIVAL';
   });
-  if (southFestivalGroup && titleEl) {
-    if (!isMobileForTitle) {
-      southFestivalGroup.addEventListener('mouseenter', function () {
-        setSiteTitle('Branding');
-      });
-      southFestivalGroup.addEventListener('mouseleave', restoreTitle);
-    } else {
-      setupMobileLongPress(southFestivalGroup, function () {
-        setSiteTitle('Branding');
-      });
-    }
+  if (southFestivalGroup && titleEl && !isMobileForTitle) {
+    southFestivalGroup.addEventListener('mouseenter', function () {
+      setSiteTitle('Branding');
+    });
+    southFestivalGroup.addEventListener('mouseleave', restoreTitle);
   }
 
-  /* Hover on LISSITZKY: show "Posters" in DingDongIrregular, same size */
-  const lissitzkyGroup = Array.from(document.querySelectorAll('.work-group')).find(function (a) {
-    const span = a.querySelector('.work-item');
-    return span && span.textContent.trim() === 'LISSITZKY';
-  });
-  if (lissitzkyGroup && titleEl) {
-    if (!isMobileForTitle) {
-      lissitzkyGroup.addEventListener('mouseenter', function () {
-        setSiteTitle('Posters');
-      });
-      lissitzkyGroup.addEventListener('mouseleave', restoreTitle);
-    } else {
-      setupMobileLongPress(lissitzkyGroup, function () {
-        setSiteTitle('Posters');
-      });
-    }
-  }
-
-  /* Hover on I THINK HE'S LISTENING TO US: show "Book" in DingDongIrregular, same size */
-  const listeningGroup = Array.from(document.querySelectorAll('.work-group')).find(function (a) {
-    const span = a.querySelector('.work-item');
-    return span && span.textContent.trim() === "I THINK HE'S LISTENING TO US";
-  });
-  if (listeningGroup && titleEl) {
-    if (!isMobileForTitle) {
-      listeningGroup.addEventListener('mouseenter', function () {
-        setSiteTitle('Book');
-      });
-      listeningGroup.addEventListener('mouseleave', restoreTitle);
-    } else {
-      setupMobileLongPress(listeningGroup, function () {
-        setSiteTitle('Book');
-      });
-    }
+  /* Hover on I THINK HE'S LISTENING TO US: show "Illustrated Book" in DingDong Irregular, same size */
+  const listeningGroup = document.querySelector('a.work-group[href="i-think-hes-listening-to-us.html"]');
+  if (listeningGroup && titleEl && !isMobileForTitle) {
+    listeningGroup.addEventListener('mouseenter', function () {
+      setSiteTitle('Illustrated Book');
+    });
+    listeningGroup.addEventListener('mouseleave', restoreTitle);
   }
 
   const gridEl = document.getElementById('bottom-grid');
@@ -447,6 +460,8 @@ document.addEventListener('DOMContentLoaded', function () {
     var overlapCount = 34; /* אחרי כמה תאים מתחילה ההיעלמות – שתי הפעולות במקביל */
     cells.forEach(function (cell, i) {
       setTimeout(function () {
+        var img = cell.querySelector('.grid-cell-img');
+        ensureHoverBgLoaded(img);
         cell.classList.add('intro-show');
       }, i * stepMs);
     });
@@ -521,11 +536,25 @@ document.addEventListener('DOMContentLoaded', function () {
   const HOVER_BASE = 'hover/';
   const ACTIVE_HOVER_IMAGES = [];
   for (var hi = 1; hi <= 86; hi++) {
+    if (hi >= 35 && hi <= 42) continue;
     if (hi >= 58 && hi <= 62) continue;
     if (hi === 77) continue;
     ACTIVE_HOVER_IMAGES.push(hi);
   }
   const HOVER_IMAGE_COUNT = ACTIVE_HOVER_IMAGES.length;
+
+  function hoverBgUrl(imageNum) {
+    if (imageNum === 'me') return "url('me.png')";
+    return "url('" + HOVER_BASE + imageNum + '.' + HOVER_IMAGE_EXT + "')";
+  }
+
+  function ensureHoverBgLoaded(imgEl) {
+    if (!imgEl || imgEl.dataset.bgLoaded === '1') return;
+    var pending = imgEl.dataset.hoverBg;
+    if (!pending) return;
+    imgEl.style.backgroundImage = pending;
+    imgEl.dataset.bgLoaded = '1';
+  }
 
   function getHoverImageNum(startOffset, cellIndex) {
     return ACTIVE_HOVER_IMAGES[(startOffset + cellIndex) % HOVER_IMAGE_COUNT];
@@ -558,7 +587,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (num >= 9 && num <= 16) return 'wildflowers';
     if (num >= 17 && num <= 24) return 'princess';
     if (num >= 25 && num <= 34) return 'south-film-festival';
-    if (num >= 35 && num <= 42) return 'lissitzky';
     if (num >= 43 && num <= 49) return 'canaanism';
     if (num >= 50 && num <= 57) return 'lucid-dreams';
     if (num >= 63 && num <= 69) return 'street';
@@ -594,7 +622,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function clearWorkScatter() {
     workScatterState.affectedCells.forEach(function (entry) {
-      entry.img.style.backgroundImage = entry.originalBg;
+      if (entry.originalBg) {
+        entry.img.style.backgroundImage = entry.originalBg;
+      } else {
+        entry.img.style.backgroundImage = '';
+        delete entry.img.dataset.bgLoaded;
+      }
       entry.img.classList.remove('is-visible');
     });
     workScatterState.affectedCells = [];
@@ -609,6 +642,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function showWorkScatter(page) {
+    if (isDesktopAboutOpen()) return;
     if (!window.matchMedia || !window.matchMedia('(min-width: 1101px)').matches) return;
     if (gridEl.classList.contains('intro-animation')) return;
 
@@ -632,9 +666,10 @@ document.addEventListener('DOMContentLoaded', function () {
       var imageNum = imageNums[i];
       workScatterState.affectedCells.push({
         img: img,
-        originalBg: img.style.backgroundImage
+        originalBg: img.style.backgroundImage || ''
       });
-      img.style.backgroundImage = "url('" + HOVER_BASE + imageNum + '.' + HOVER_IMAGE_EXT + "')";
+      img.dataset.hoverBg = hoverBgUrl(imageNum);
+      ensureHoverBgLoaded(img);
       img.classList.add('is-visible');
     });
   }
@@ -682,7 +717,7 @@ document.addEventListener('DOMContentLoaded', function () {
         cell.style.height = cellHeight + 'px';
         var bg = document.createElement('div');
         bg.className = 'about-intro-overlay-cell-img';
-        bg.style.backgroundImage = "url('" + HOVER_BASE + imageNum + '.' + HOVER_IMAGE_EXT + "')";
+        bg.dataset.hoverBg = hoverBgUrl(imageNum);
         cell.appendChild(bg);
         cellsContainer.appendChild(cell);
         cellIndex++;
@@ -694,7 +729,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     for (var i = 0; i < cells.length; i++) {
       (function (idx) {
-        setTimeout(function () { cells[idx].classList.add('intro-show'); }, idx * stepMs);
+        setTimeout(function () {
+          var bg = cells[idx].querySelector('.about-intro-overlay-cell-img');
+          ensureHoverBgLoaded(bg);
+          cells[idx].classList.add('intro-show');
+        }, idx * stepMs);
       })(i);
     }
     for (var i = 0; i < cells.length; i++) {
@@ -784,14 +823,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
           const bg = document.createElement('div');
           bg.className = 'grid-cell-img';
-          bg.style.backgroundImage = (aboutVisible && !preferHoverGrid)
-            ? "url('me.png')"
-            : "url('" + HOVER_BASE + imageNum + '.' + HOVER_IMAGE_EXT + "')";
+          bg.dataset.hoverBg = (aboutVisible && !preferHoverGrid)
+            ? hoverBgUrl('me')
+            : hoverBgUrl(imageNum);
           cell.appendChild(bg);
 
           (function (cellEl, imgEl) {
             var hideTimeout = null;
             cellEl.addEventListener('mouseenter', function () {
+              ensureHoverBgLoaded(imgEl);
               if (hideTimeout) clearTimeout(hideTimeout);
               imgEl.classList.add('is-visible');
             });
