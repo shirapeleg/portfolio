@@ -177,6 +177,16 @@ document.addEventListener('DOMContentLoaded', function () {
       if (titleMobileEl) titleMobileEl.style.fontSize = '';
       document.documentElement.style.removeProperty('--mobile-work-inset-left');
       document.documentElement.style.removeProperty('--mobile-work-inset-right');
+      document.documentElement.style.removeProperty('--mobile-header-spacer');
+      var mobileSpacer = document.querySelector('.mobile-title-grid-line-top');
+      var mobileLineBelow = document.querySelector('.mobile-title-grid-line-bottom');
+      var bottomGridEl = document.getElementById('bottom-grid');
+      if (mobileSpacer) mobileSpacer.style.height = '';
+      if (mobileLineBelow) mobileLineBelow.style.top = '';
+      if (bottomGridEl) {
+        bottomGridEl.style.minHeight = '';
+        bottomGridEl.style.marginBottom = '';
+      }
       if (aboutWrap) {
         aboutWrap.style.position = '';
         aboutWrap.style.left = '';
@@ -194,28 +204,80 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
     const topLine = document.querySelector('.top-line');
-    const firstWorkRow = document.querySelector('.works-rect-1 .work-group') || document.querySelector('.works-rect-1') || document.querySelector('.work-group');
-    if (!firstWorkRow) return;
+    const spacerEl = document.querySelector('.mobile-title-grid-line-top');
+    const lineBelowTitle = document.querySelector('.mobile-title-grid-line-bottom');
+    const bottomGrid = document.getElementById('bottom-grid');
+    if (!topLine || !titleMobileEl) return;
 
-    var navBottom = topLine
-      ? topLine.getBoundingClientRect().bottom
-      : 52;
-    var worksTop = firstWorkRow.getBoundingClientRect().top;
-    var bandHeight = worksTop - navBottom;
-    if (bandHeight <= 0) return;
-
+    var navBottom = topLine.getBoundingClientRect().bottom;
     var bodyRect = document.body.getBoundingClientRect();
+    var bodyPadTop = parseFloat(window.getComputedStyle(document.body).paddingTop) || 0;
+    var contentStart = bodyRect.top + bodyPadTop;
     var bandTop = navBottom - bodyRect.top;
 
-    document.documentElement.style.setProperty('--mobile-nav-bottom', navBottom + 'px');
-    document.documentElement.style.setProperty('--mobile-works-start', worksTop + 'px');
-    document.documentElement.style.setProperty('--mobile-title-band-height', bandHeight + 'px');
+    function mobileTitleTextLineRects() {
+      var range = document.createRange();
+      range.selectNodeContents(titleMobileEl);
+      var rects = range.getClientRects();
+      var lines = [];
+      for (var i = 0; i < rects.length; i++) {
+        var r = rects[i];
+        if (r.width > 0.5 && r.height > 0.5) lines.push(r);
+      }
+      return lines;
+    }
 
-    titleWrap.style.top = bandTop + 'px';
-    titleWrap.style.height = bandHeight + 'px';
+    /* הזזת ויזואלית של הכותרת בלבד (translateY ב-CSS) – לא מזיזה את קו תחילת העבודות */
+    var mobileTitleVisualNudgeDownPx = 25;
+
+    function symmetricBandEnd() {
+      var titleRect = titleMobileEl.getBoundingClientRect();
+      var lines = mobileTitleTextLineRects();
+      var firstTop = lines.length ? lines[0].top : titleRect.top;
+      var lastBottom = lines.length ? lines[lines.length - 1].bottom : titleRect.bottom;
+      var gapAbove = Math.max(0, firstTop - navBottom);
+      var layoutBandEnd = lastBottom + gapAbove;
+      layoutBandEnd -=
+        mobileTitleVisualNudgeDownPx +
+        (gapAbove > 0 ? mobileTitleVisualNudgeDownPx : 0);
+      return layoutBandEnd;
+    }
+
+    var titlePullUp = 12;
+    titleWrap.style.top = Math.max(0, bandTop - titlePullUp) + 'px';
     titleWrap.style.left = '0';
     titleWrap.style.width = '100%';
     titleWrap.style.transform = 'none';
+    titleWrap.style.height = '120px';
+    fitMobileTitle();
+
+    var bandEnd = symmetricBandEnd();
+    for (var pass = 0; pass < 3; pass++) {
+      var symmetricHeight = Math.max(48, bandEnd - navBottom) + titlePullUp;
+      titleWrap.style.height = symmetricHeight + 'px';
+      fitMobileTitle();
+      bandEnd = symmetricBandEnd();
+    }
+
+    document.documentElement.style.setProperty('--mobile-nav-bottom', navBottom + 'px');
+    document.documentElement.style.setProperty('--mobile-works-start', bandEnd + 'px');
+    document.documentElement.style.setProperty('--mobile-title-band-height', bandEnd - navBottom + 'px');
+
+    function layoutSpacerForWorks() {
+      var gridMin = 0;
+      var gridMargin = 0;
+      if (bottomGrid) {
+        bottomGrid.style.minHeight = gridMin + 'px';
+        bottomGrid.style.marginBottom = gridMargin + 'px';
+      }
+      var targetOffset = bandEnd - contentStart;
+      var spacer = Math.max(0, targetOffset - gridMin - gridMargin);
+      document.documentElement.style.setProperty('--mobile-header-spacer', spacer + 'px');
+      if (spacerEl) spacerEl.style.height = spacer + 'px';
+      if (lineBelowTitle) lineBelowTitle.style.top = bandEnd + 'px';
+    }
+
+    layoutSpacerForWorks();
 
     /* מובייל: כש-ABOUT/CONTACT פתוח – הפסקה מתחילה מיד מתחת לשורת הניווט העליונה */
     if (aboutWrap) {
@@ -250,7 +312,14 @@ document.addEventListener('DOMContentLoaded', function () {
         aboutWrap.style.alignItems = '';
       }
     }
-    fitMobileTitle();
+
+    requestAnimationFrame(function () {
+      bandEnd = symmetricBandEnd();
+      document.documentElement.style.setProperty('--mobile-works-start', bandEnd + 'px');
+      layoutSpacerForWorks();
+      fitMobileTitle();
+      syncMobileWorkListToTitle();
+    });
   }
 
   function updateSiteTitleHighlight() {
@@ -549,9 +618,10 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function ensureHoverBgLoaded(imgEl) {
-    if (!imgEl || imgEl.dataset.bgLoaded === '1') return;
+    if (!imgEl) return;
     var pending = imgEl.dataset.hoverBg;
     if (!pending) return;
+    if (imgEl.dataset.bgLoaded === '1' && imgEl.style.backgroundImage === pending) return;
     imgEl.style.backgroundImage = pending;
     imgEl.dataset.bgLoaded = '1';
   }
@@ -600,9 +670,34 @@ document.addEventListener('DOMContentLoaded', function () {
     return file.replace(/\.html(\?.*)?(#.*)?$/, '') || null;
   }
 
+  /** סדר תמונות hover לכל עבודה (מספרי הקבצים בתיקיית hover) */
+  var WORK_PAGE_HOVER_IMAGES = {
+    block: [1, 2, 3, 4, 5, 6, 7, 8],
+    wildflowers: [9, 10, 11, 12, 13, 14, 15, 16],
+    princess: [17, 18, 19, 20, 21, 22, 23, 24],
+    'south-film-festival': [25, 26, 27, 28, 29, 30, 31, 32, 33, 34],
+    canaanism: [43, 44, 45, 46, 47, 48, 49],
+    'lucid-dreams': [50, 51, 52, 53, 54, 55, 56, 57],
+    street: [63, 64, 65, 66, 67, 68, 69],
+    'i-think-hes-listening-to-us': [70, 71, 72, 73, 74, 75, 76, 78, 79, 80, 81, 82, 83, 84, 85, 86]
+  };
+
   function getImageNumsForPage(page) {
-    return ACTIVE_HOVER_IMAGES.filter(function (num) {
-      return getPageForImageNum(num) === page;
+    var list = WORK_PAGE_HOVER_IMAGES[page];
+    return list ? list.slice() : [];
+  }
+
+  function sortCellIndicesByGridPosition(indices, cells) {
+    return indices.slice().sort(function (a, b) {
+      var ca = cells[a];
+      var cb = cells[b];
+      if (!ca || !cb) return 0;
+      var ra = parseInt(ca.dataset.gridRow, 10) || 0;
+      var rb = parseInt(cb.dataset.gridRow, 10) || 0;
+      if (ra !== rb) return ra - rb;
+      var caCol = parseInt(ca.dataset.gridCol, 10) || 0;
+      var cbCol = parseInt(cb.dataset.gridCol, 10) || 0;
+      return caCol - cbCol;
     });
   }
 
@@ -616,12 +711,26 @@ document.addEventListener('DOMContentLoaded', function () {
     return arr;
   }
 
+  function pickRandomCellIndices(count, totalCells) {
+    var indices = [];
+    for (var i = 0; i < totalCells; i++) indices.push(i);
+    shuffleArray(indices);
+    return indices.slice(0, Math.min(count, totalCells));
+  }
+
   var workScatterState = {
     affectedCells: []
   };
 
   function clearWorkScatter() {
     workScatterState.affectedCells.forEach(function (entry) {
+      if (entry.originalHoverBg !== undefined) {
+        if (entry.originalHoverBg) {
+          entry.img.dataset.hoverBg = entry.originalHoverBg;
+        } else {
+          delete entry.img.dataset.hoverBg;
+        }
+      }
       if (entry.originalBg) {
         entry.img.style.backgroundImage = entry.originalBg;
       } else {
@@ -632,13 +741,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     workScatterState.affectedCells = [];
     gridEl.classList.remove('work-scatter-active');
-  }
-
-  function pickRandomCellIndices(count, totalCells) {
-    var indices = [];
-    for (var i = 0; i < totalCells; i++) indices.push(i);
-    shuffleArray(indices);
-    return indices.slice(0, Math.min(count, totalCells));
   }
 
   function showWorkScatter(page) {
@@ -655,8 +757,10 @@ document.addEventListener('DOMContentLoaded', function () {
     clearWorkScatter();
     gridEl.classList.add('work-scatter-active');
 
-    shuffleArray(imageNums);
-    var cellIndices = pickRandomCellIndices(imageNums.length, cells.length);
+    var cellIndices = sortCellIndicesByGridPosition(
+      pickRandomCellIndices(imageNums.length, cells.length),
+      cells
+    );
 
     cellIndices.forEach(function (cellIndex, i) {
       var cell = cells[cellIndex];
@@ -666,7 +770,8 @@ document.addEventListener('DOMContentLoaded', function () {
       var imageNum = imageNums[i];
       workScatterState.affectedCells.push({
         img: img,
-        originalBg: img.style.backgroundImage || ''
+        originalBg: img.style.backgroundImage || '',
+        originalHoverBg: img.dataset.hoverBg || ''
       });
       img.dataset.hoverBg = hoverBgUrl(imageNum);
       ensureHoverBgLoaded(img);

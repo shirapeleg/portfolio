@@ -135,9 +135,11 @@ body {
   }
 }
 
-/* קווי גריד למובייל – מוסתרים בדסקטופ, מופעלים רק במובייל בעמוד הפתיחה */
-.mobile-title-grid-line {
-  display: none;
+/* קווי גריד למובייל – מוסתרים בדסקטופ בלבד */
+@media (min-width: 1101px) {
+  .mobile-title-grid-line {
+    display: none;
+  }
 }
 
 .top-line {
@@ -1245,9 +1247,33 @@ body {
     --mobile-band-center: calc((var(--mobile-nav-bottom) + var(--mobile-works-start)) / 2);
     --mobile-band-top: calc(var(--mobile-band-center) - 80px);
   }
-  /* גריד הכותרת במובייל – מוסתר (אין בו צורך) */
-  .mobile-title-grid-line {
-    display: none;
+  /* רווח גריד עד קו תחתון פס הכותרת (גובה מחושב ב-JS) */
+  .mobile-title-grid-line-top {
+    display: block;
+    grid-row: 1;
+    width: 100%;
+    height: var(--mobile-header-spacer, 0px);
+    margin: 0;
+    padding: 0;
+    border: none;
+    pointer-events: none;
+    visibility: hidden;
+  }
+
+  /* קו אופקי מתחת לכותרת – מיקום אנכי מחושב ב-JS (סימטרי לקו הניווט) */
+  .mobile-title-grid-line-bottom {
+    display: block;
+    position: fixed;
+    left: 6px;
+    right: 6px;
+    top: var(--mobile-works-start, 160px);
+    height: 1px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    box-shadow: inset 0 0 0 1px black;
+    z-index: 18;
+    pointer-events: none;
   }
 
   /* 3. כותרת "Shira Peleg" – מתפרסת בתוך המלבן הלבן מעל שמות העבודות */
@@ -1260,21 +1286,21 @@ body {
     min-height: 0;
     transform: none;
     box-sizing: border-box;
-    /* padding תחתון גדול יותר – מרכז אופטי מעל האמצע הגיאומטרי (לא צמוד לקו התחתון) */
-    padding: 0 12px 52px;
+    padding: 0 12px 8px;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     overflow: visible;
-    z-index: 5;
+    z-index: 10;
   }
 
   .site-title {
     width: 100%;
-    height: 100%;
+    height: auto;
     min-height: 0;
+    flex: 0 0 auto;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
   }
 
@@ -1291,13 +1317,17 @@ body {
     font-family: 'Heebo', sans-serif;
     font-weight: 800;
     font-size: min(calc((var(--mobile-title-band-height) - 24px) / 2.4), 18vw);
-    line-height: 1;
+    line-height: 0.82;
     min-height: 0;
     text-align: center;
     box-sizing: border-box;
     --title-marker-ls: 0.05em;
     letter-spacing: var(--title-marker-ls);
-    transform: translateY(-6px);
+    transform: translateY(calc(-0.28em + 35px));
+  }
+
+  .site-title-text-mobile .title-marker-fill {
+    line-height: 0.82;
   }
 
   /* במובייל בלבד: כש-ABOUT פתוח – הכותרת מתחבאת והפסקה מופיעה באותו מקום */
@@ -1414,7 +1444,8 @@ body {
   }
   .bottom-rectangle-grid {
     grid-row: 3;
-    margin-bottom: 30px; /* רווח מעל רשימת העבודות – לא בתוך המלבנים */
+    min-height: 0;
+    margin-bottom: 0;
   }
 
   .works-rows-wrap {
@@ -1437,7 +1468,11 @@ body {
   }
 
   /* מיקום כל עבודה בשורת גריד קבועה – 8 מלבנים שווים בגובה */
-  .works-rect-1 .work-group:nth-child(1) { grid-row: 4; }
+  /* קו מתחת ל-Shira Peleg – .mobile-title-grid-line-bottom (לא כפל border בשורה הראשונה) */
+  .works-rect-1 .work-group:nth-child(1) {
+    grid-row: 4;
+    border-top: none;
+  }
   .works-rect-1 .work-group:nth-child(2) { grid-row: 5; }
   .works-rect-1 .work-group:nth-child(3) { grid-row: 6; }
   .works-rect-1 .work-group:nth-child(4) { grid-row: 7; }
@@ -1504,14 +1539,14 @@ body {
     display: none;
   }
 
-  /* 6. הגריד התחתון – שיהיה פשוט בלוק מתחת, לא "מסגרת" קשיחה */
+  /* 6. הגריד התחתון – בלי מינימום גובה במובייל (הריווח מחושב ב-JS) */
   .bottom-rectangle-grid {
     position: static;
     top: auto;
     bottom: auto;
     width: 100%;
     height: auto;
-    min-height: 260px;
+    min-height: 0;
   }
 
   .bottom-rectangle-grid svg {
