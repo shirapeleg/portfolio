@@ -178,6 +178,9 @@ document.addEventListener('DOMContentLoaded', function () {
       document.documentElement.style.removeProperty('--mobile-work-inset-left');
       document.documentElement.style.removeProperty('--mobile-work-inset-right');
       document.documentElement.style.removeProperty('--mobile-header-spacer');
+      document.documentElement.style.removeProperty('--mobile-shira-line-top');
+      document.documentElement.style.removeProperty('--mobile-shira-title-pad-left');
+      document.documentElement.style.removeProperty('--mobile-shira-title-pad-right');
       var mobileSpacer = document.querySelector('.mobile-title-grid-line-top');
       var mobileLineBelow = document.querySelector('.mobile-title-grid-line-bottom');
       var bottomGridEl = document.getElementById('bottom-grid');
@@ -279,24 +282,52 @@ document.addEventListener('DOMContentLoaded', function () {
 
     layoutSpacerForWorks();
 
-    /* מובייל: כש-ABOUT/CONTACT פתוח – הפסקה מתחילה מיד מתחת לשורת הניווט העליונה */
+    function syncMobileShiraTitleAnchor() {
+      if (!titleMobileEl) return;
+      var lines = mobileTitleTextLineRects();
+      var firstLine = lines.length ? lines[0] : titleMobileEl.getBoundingClientRect();
+      var titleBlock = titleMobileEl.getBoundingClientRect();
+      var root = document.documentElement;
+      root.style.setProperty('--mobile-shira-line-top', Math.round(firstLine.top) + 'px');
+      root.style.setProperty(
+        '--mobile-shira-title-pad-left',
+        Math.round(Math.max(0, firstLine.left)) + 'px'
+      );
+      root.style.setProperty(
+        '--mobile-shira-title-pad-right',
+        Math.round(Math.max(0, bodyRect.right - titleBlock.right)) + 'px'
+      );
+    }
+
+    function clearMobileAboutInlinePosition() {
+      if (!aboutWrap) return;
+      aboutWrap.style.position = '';
+      aboutWrap.style.left = '';
+      aboutWrap.style.right = '';
+      aboutWrap.style.top = '';
+      aboutWrap.style.width = '';
+      aboutWrap.style.margin = '';
+      aboutWrap.style.marginTop = '';
+      aboutWrap.style.padding = '';
+      aboutWrap.style.transform = '';
+      aboutWrap.style.height = '';
+      aboutWrap.style.minHeight = '';
+      aboutWrap.style.display = '';
+      aboutWrap.style.alignItems = '';
+      aboutWrap.style.zIndex = '';
+    }
+
+    syncMobileShiraTitleAnchor();
+
+    /* מובייל: ABOUT / CONTACT – מיקום דרך CSS (שורת Shira) */
     if (aboutWrap) {
       if (
         document.body.classList.contains('about-open-mobile') ||
         document.body.classList.contains('contact-open-mobile')
       ) {
-        aboutWrap.style.position = 'absolute';
-        aboutWrap.style.left = '0';
-        aboutWrap.style.right = 'auto';
-        aboutWrap.style.transform = 'none';
-        aboutWrap.style.top = '14px';
-        aboutWrap.style.width = '100%';
-        aboutWrap.style.marginTop = '0';
-        aboutWrap.style.padding = '0 12px';
-        aboutWrap.style.height = 'auto';
-        aboutWrap.style.minHeight = '0';
+        clearMobileAboutInlinePosition();
         aboutWrap.style.display = 'block';
-        aboutWrap.style.alignItems = '';
+        aboutWrap.style.margin = '0';
       } else {
         aboutWrap.style.position = '';
         aboutWrap.style.left = '';
@@ -319,6 +350,7 @@ document.addEventListener('DOMContentLoaded', function () {
       layoutSpacerForWorks();
       fitMobileTitle();
       syncMobileWorkListToTitle();
+      syncMobileShiraTitleAnchor();
     });
   }
 

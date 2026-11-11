@@ -976,6 +976,10 @@ body {
   text-decoration: underline;
 }
 
+.contact-mobile-shira-img {
+  display: none;
+}
+
 .top-nav .nav-link.active {
   background: black;
   color: white;
@@ -1335,6 +1339,34 @@ body {
     visibility: hidden;
   }
 
+  /* ABOUT / CONTACT פתוחים – הפסקה מתחילה בשורה העליונה של הכותרת (Shira) */
+  body.about-open-mobile .about-paragraph-wrap.is-visible:not(.is-contact),
+  body.contact-open-mobile .about-paragraph-wrap.is-visible.is-contact {
+    --contact-mobile-text-size: calc(0.875rem + 11px);
+    position: fixed;
+    top: var(--mobile-shira-line-top, 52px);
+    left: 0;
+    right: 0;
+    width: auto;
+    margin: 0;
+    padding: 0 var(--mobile-shira-title-pad-right, 12px) 12px var(--mobile-shira-title-pad-left, 12px);
+    display: block;
+    align-items: flex-start;
+    justify-content: flex-start;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+    z-index: 11;
+    box-sizing: border-box;
+    transform: none;
+  }
+
+  body.about-open-mobile .about-paragraph-wrap.is-visible:not(.is-contact) .about-paragraph-text,
+  body.contact-open-mobile .about-paragraph-wrap.is-visible.is-contact .contact-paragraph-text {
+    margin: 0;
+    padding: 0;
+  }
+
   /* overlay אנימציית about – מעל כל התוכן, גריד me.png כמו אנימציית הפתיחה */
   .about-intro-overlay {
     display: none;
@@ -1384,20 +1416,7 @@ body {
   body.contact-open-mobile .site-title-wrap {
     visibility: hidden;
   }
-  body.contact-open-mobile .about-paragraph-wrap {
-    position: absolute;
-    top: 14px;
-    left: 0;
-    right: 0;
-    height: auto;
-    min-height: 0;
-    margin: 0;
-    padding: 0 12px;
-    display: block;
-    overflow: visible;
-    z-index: 10;
-  }
-  body.contact-open-mobile .about-paragraph-wrap .contact-paragraph-text {
+  body.contact-open-mobile .about-paragraph-wrap.is-visible.is-contact .contact-paragraph-text {
     position: static;
     top: auto;
     left: auto;
@@ -1405,6 +1424,22 @@ body {
     transform: none;
     z-index: 10;
     font-size: calc(0.875rem + 11px); /* קטן ב-4px מהטקסט הרגיל במובייל (15px → 11px) */
+  }
+
+  /* CONTACT במובייל: תמונה מימין, מעל הקו האופקי של שמות העבודות */
+  body.contact-open-mobile .contact-mobile-shira-img {
+    display: block;
+    position: fixed;
+    right: var(--mobile-shira-title-pad-right, 12px);
+    top: calc(var(--mobile-works-start, 342px) - 170px - 6px);
+    width: 170px;
+    max-width: 170px;
+    max-height: 170px;
+    height: auto;
+    object-fit: contain;
+    object-position: right center;
+    z-index: 12;
+    pointer-events: none;
   }
 
   /* 4. טקסט ABOUT/CONTACT – במקום טור צר בצד, הופך לבלוק מלא מתחת לכותרת */
