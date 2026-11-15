@@ -976,10 +976,6 @@ body {
   text-decoration: underline;
 }
 
-.contact-mobile-shira-img {
-  display: none;
-}
-
 .top-nav .nav-link.active {
   background: black;
   color: white;
@@ -1342,7 +1338,6 @@ body {
   /* ABOUT / CONTACT פתוחים – הפסקה מתחילה בשורה העליונה של הכותרת (Shira) */
   body.about-open-mobile .about-paragraph-wrap.is-visible:not(.is-contact),
   body.contact-open-mobile .about-paragraph-wrap.is-visible.is-contact {
-    --contact-mobile-text-size: calc(0.875rem + 11px);
     position: fixed;
     top: var(--mobile-shira-line-top, 52px);
     left: 0;
@@ -1424,22 +1419,6 @@ body {
     transform: none;
     z-index: 10;
     font-size: calc(0.875rem + 11px); /* קטן ב-4px מהטקסט הרגיל במובייל (15px → 11px) */
-  }
-
-  /* CONTACT במובייל: תמונה מימין, מעל הקו האופקי של שמות העבודות */
-  body.contact-open-mobile .contact-mobile-shira-img {
-    display: block;
-    position: fixed;
-    right: var(--mobile-shira-title-pad-right, 12px);
-    top: calc(var(--mobile-works-start, 342px) - 170px - 6px);
-    width: 170px;
-    max-width: 170px;
-    max-height: 170px;
-    height: auto;
-    object-fit: contain;
-    object-position: right center;
-    z-index: 12;
-    pointer-events: none;
   }
 
   /* 4. טקסט ABOUT/CONTACT – במקום טור צר בצד, הופך לבלוק מלא מתחת לכותרת */
