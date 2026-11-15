@@ -552,29 +552,65 @@ document.addEventListener('DOMContentLoaded', function () {
   const isMobile = window.matchMedia && window.matchMedia('(max-width: 1100px)').matches;
 
   let introRan = false;
+  let introPending = false;
+  let gridIntroActive = false;
+  let gridIntroTimers = [];
+  let gridIntroStartTimer = null;
+  let layoutGridDeferred = false;
+
+  function clearGridIntroTimers() {
+    gridIntroTimers.forEach(function (id) { clearTimeout(id); });
+    gridIntroTimers = [];
+    if (gridIntroStartTimer != null) {
+      clearTimeout(gridIntroStartTimer);
+      gridIntroStartTimer = null;
+    }
+  }
+
+  function scheduleGridIntroTimer(fn, ms) {
+    var id = setTimeout(fn, ms);
+    gridIntroTimers.push(id);
+    return id;
+  }
 
   function runGridIntro() {
+    var cells = gridEl.querySelectorAll('.grid-cell');
+    if (!cells.length) {
+      introPending = false;
+      return;
+    }
+    introPending = false;
+    gridIntroActive = true;
     gridEl.classList.add('intro-animation');
-    const cells = gridEl.querySelectorAll('.grid-cell');
     const stepMs = 18;
     const fadeMs = 250;
     var overlapCount = 34; /* אחרי כמה תאים מתחילה ההיעלמות – שתי הפעולות במקביל */
     cells.forEach(function (cell, i) {
-      setTimeout(function () {
+      scheduleGridIntroTimer(function () {
+        if (!gridEl.contains(cell)) return;
         var img = cell.querySelector('.grid-cell-img');
         ensureHoverBgLoaded(img);
         cell.classList.add('intro-show');
       }, i * stepMs);
     });
     cells.forEach(function (cell, i) {
-      setTimeout(function () {
+      scheduleGridIntroTimer(function () {
+        if (!gridEl.contains(cell)) return;
         cell.classList.remove('intro-show');
       }, overlapCount * stepMs + i * stepMs);
     });
     var lastDisappearMs = overlapCount * stepMs + (cells.length - 1) * stepMs;
-    setTimeout(function () {
+    scheduleGridIntroTimer(function () {
+      gridIntroActive = false;
+      introRan = true;
       gridEl.classList.remove('intro-animation');
-      cells.forEach(function (cell) { cell.classList.remove('intro-show'); });
+      cells.forEach(function (cell) {
+        if (gridEl.contains(cell)) cell.classList.remove('intro-show');
+      });
+      if (layoutGridDeferred) {
+        layoutGridDeferred = false;
+        layoutGrid();
+      }
     }, lastDisappearMs + fadeMs);
   }
 
@@ -886,6 +922,14 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function layoutGrid() {
+    if (!isMobile && gridIntroActive) {
+      layoutGridDeferred = true;
+      return;
+    }
+
+    clearGridIntroTimers();
+    if (introPending) introPending = false;
+
     clearWorkScatter();
     const width = gridEl.clientWidth;
     const height = gridEl.clientHeight;
@@ -1000,13 +1044,20 @@ document.addEventListener('DOMContentLoaded', function () {
     var navEntry = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
     var isReload = navEntry && navEntry.type === 'reload';
     var fromOutside = !document.referrer || document.referrer.indexOf(window.location.origin) !== 0;
-    var showIntro = isHome && !introRan && (isReload || fromOutside);
+    var showIntro = isHome && !introRan && !introPending && (isReload || fromOutside);
     if (showIntro) {
-      introRan = true;
       if (isMobile) {
+        introRan = true;
         setTimeout(runOpeningOverlayIntro, 80);
       } else {
-        setTimeout(runGridIntro, 80);
+        introPending = true;
+        gridEl.querySelectorAll('.grid-cell-img').forEach(function (img) {
+          ensureHoverBgLoaded(img);
+        });
+        gridIntroStartTimer = setTimeout(function () {
+          gridIntroStartTimer = null;
+          runGridIntro();
+        }, 80);
       }
     }
     /* מובייל: כשפאנל about נפתח – אנימציה זהה לאנימציית הפתיחה עם me.png מעל התוכן */
